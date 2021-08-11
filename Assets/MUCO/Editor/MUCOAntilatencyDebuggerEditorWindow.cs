@@ -27,8 +27,8 @@ namespace PhenomenalViborg
             window.titleContent = new GUIContent("MUCO | Antilatency Debugger");
         }
 
-        private ILibrary m_Library;
-        private INetwork m_NativeNetwork;
+        private ILibrary m_Library = null;
+        private INetwork m_NativeNetwork = null;
         private uint m_LastUpdateId = 0;
 
         private double m_TimeAtLastRefresh = 0.0f;
@@ -38,56 +38,60 @@ namespace PhenomenalViborg
         // TODO: Consider moveing this to MUCOAntilatencyUtils.
         private struct AntilatencyDeviceInfo
         {
-            [ReadOnly]
-            public string fullPath;
+            [ReadOnly] public string Path;
 
-            [ReadOnly]
-            public string name;
+            [Header("System")]
+            [ReadOnly] public string HardwareName;
+            [ReadOnly] public string HardwareVersion;
+            [ReadOnly] public string HardwareSerialNumber;
+            [ReadOnly] public string FirmwareName;
+            [ReadOnly] public string FirmwareVersion;
+
+            [Header("AltTag Specific")]
+            [ShowIf("@this.HardwareName == \"AltTag\"")]
+            [ReadOnly] public string Tag;
+            [ReadOnly] public string ChannelsMask;
 
             public AntilatencyDeviceInfo(NodeHandle nodeHandle, INetwork network)
             {
-                fullPath = MUCOAntilatencyUtils.GetFullNodePathRecursive(nodeHandle, network);
-                name = network.nodeGetStringProperty(nodeHandle, "sys/HardwareName");
-            }
-        }
+                Path = MUCOAntilatencyUtils.GetFullNodePathRecursive(nodeHandle, network, "", true);
+                HardwareName = network.nodeGetStringProperty(nodeHandle, "sys/HardwareName");
+                HardwareVersion = network.nodeGetStringProperty(nodeHandle, "sys/HardwareVersion");
+                HardwareSerialNumber = network.nodeGetStringProperty(nodeHandle, "sys/HardwareSerialNumber");
+                FirmwareName = network.nodeGetStringProperty(nodeHandle, "sys/FirmwareName");
+                FirmwareVersion = network.nodeGetStringProperty(nodeHandle, "sys/FirmwareVersion");
 
-        public void Refresh(bool hardRefresh = false)
-        {
-            // Refresh m_AntilatencyDevices
-            NodeHandle[] nodes = m_NativeNetwork.getNodes();
-            if (hardRefresh || nodes.Length != m_AntilatencyDeviceInfoStructs.Count)
-            {
-                m_AntilatencyDeviceInfoStructs.Clear();
-                m_AntilatencyDeviceInfoStructs = new List<AntilatencyDeviceInfo>();
+                Tag = "";
+                ChannelsMask = "";
 
-                HashSet<string> nodePaths = new HashSet<string>();
-                foreach (NodeHandle node in nodes)
+                switch (HardwareName)
                 {
-                    m_AntilatencyDeviceInfoStructs.Add(new AntilatencyDeviceInfo(node, m_NativeNetwork));
+                    case "AltTag":
+                        Tag = network.nodeGetStringProperty(nodeHandle, "Tag");
+                        ChannelsMask = network.nodeGetStringProperty(nodeHandle, "ChannelsMask");
+                        break;
+                    default:
+                        break;
                 }
             }
-
-            if (hardRefresh)
-            {
-                TerminateAntilatency();
-                InitializeAntilatency();
-            }
-
-            ForceMenuTreeRebuild();
         }
 
         protected override void Initialize()
         {
             base.Initialize();
+        }
 
-            InitializeAntilatency();
+        protected void Awake()
+        {
+            InitializeAntilatencyDeviceNetwork();
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
 
-            TerminateAntilatency();
+            TerminateAntilatencyDeviceNetwork();
+
         }
 
         protected void OnInspectorUpdate()
@@ -98,10 +102,41 @@ namespace PhenomenalViborg
                 Refresh(false); // Soft refresh
             }
 
-            UpdateAntilatency();
+            UpdateAntilatencyDeviceNetwork();
         }
 
-        private void InitializeAntilatency()
+        private void Refresh(bool hardRefresh = false)
+        {
+            // Refresh m_AntilatencyDevices
+            if (hardRefresh)
+            {
+                TerminateAntilatencyDeviceNetwork();
+                InitializeAntilatencyDeviceNetwork();
+            }
+
+            if (m_NativeNetwork != null)
+            {
+                NodeHandle[] nodes = m_NativeNetwork.getNodes();
+                if (hardRefresh || nodes.Length != m_AntilatencyDeviceInfoStructs.Count)
+                {
+                    m_AntilatencyDeviceInfoStructs.Clear();
+
+                    HashSet<string> nodePaths = new HashSet<string>();
+                    foreach (NodeHandle node in nodes)
+                    {
+                        m_AntilatencyDeviceInfoStructs.Add(new AntilatencyDeviceInfo(node, m_NativeNetwork));
+                    }
+                }
+            }
+            else
+            {
+                m_AntilatencyDeviceInfoStructs.Clear();
+            }
+
+            ForceMenuTreeRebuild();
+        }
+
+        private void InitializeAntilatencyDeviceNetwork()
         {
             // Initialize m_Library and m_NativeNetwork
             m_Library = Antilatency.DeviceNetwork.Library.load();
@@ -126,9 +161,11 @@ namespace PhenomenalViborg
             {
                 Debug.LogError("Failed to create Antilatency Device Network");
             }
+
+            Refresh();
         }
 
-        private void TerminateAntilatency()
+        private void TerminateAntilatencyDeviceNetwork()
         {
             if (m_NativeNetwork != null)
             {
@@ -141,9 +178,11 @@ namespace PhenomenalViborg
                 m_Library.Dispose();
                 m_Library = null;
             }
+
+            Refresh();
         }
 
-        private void UpdateAntilatency()
+        private void UpdateAntilatencyDeviceNetwork()
         {
             if (m_NativeNetwork == null)
             {
@@ -155,7 +194,6 @@ namespace PhenomenalViborg
             {
                 m_LastUpdateId = updateId;
             }
-
         }
 
         protected override OdinMenuTree BuildMenuTree()
@@ -166,7 +204,7 @@ namespace PhenomenalViborg
 
             foreach (AntilatencyDeviceInfo antilatencyDeviceNodeInfo in m_AntilatencyDeviceInfoStructs)
             {
-                tree.Add("ConnectedDevices/"+antilatencyDeviceNodeInfo.fullPath, antilatencyDeviceNodeInfo);
+                tree.Add("ConnectedDevices/" + antilatencyDeviceNodeInfo.Path, antilatencyDeviceNodeInfo);
             }
 
             return tree;
@@ -178,6 +216,21 @@ namespace PhenomenalViborg
             void OnRefreshButtonPressed()
             {
                 m_ParentEditor.Refresh(true);
+            }
+
+            [EnableIf("@m_ParentEditor.m_NativeNetwork == null")]
+            [Button("Initialize Antilatency Device Network")]
+            void OnInitializeAntilatencyButtonPressed()
+            {
+                m_ParentEditor.InitializeAntilatencyDeviceNetwork();
+            }
+
+            [EnableIf("@m_ParentEditor.m_NativeNetwork != null")]
+            [Button("Terminate Antilatency Device Network")]
+            void OnTerminateAntilatencyRefreshButtonPressed()
+            {
+                m_ParentEditor.TerminateAntilatencyDeviceNetwork();
+                
             }
 
             private MUCOAntilatencyDebuggerEditorWindow m_ParentEditor;

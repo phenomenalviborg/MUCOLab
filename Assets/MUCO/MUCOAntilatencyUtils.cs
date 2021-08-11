@@ -15,10 +15,10 @@ namespace PhenomenalViborg
         /// <param name="network">The active network.</param>
         /// <param name="calculatedPath">This field should only be specified from inside the function.</param>
         /// <returns></returns>
-        public static string GetFullNodePathRecursive(NodeHandle nodeHandle, INetwork network, string calculatedPath = "")
+        public static string GetFullNodePathRecursive(NodeHandle nodeHandle, INetwork network, string calculatedPath = "", bool serialSuffix = false)
         {
             NodeHandle parent = network.nodeGetParent(nodeHandle);
-            string newPath = network.nodeGetStringProperty(nodeHandle, "sys/HardwareName") + "/" + calculatedPath;
+            string newPath = network.nodeGetStringProperty(nodeHandle, "sys/HardwareName") + (serialSuffix ? "-" + network.nodeGetStringProperty(nodeHandle, "sys/HardwareSerialNumber") : "") + (calculatedPath != "" ? "/" : "") + calculatedPath;
 
             if (parent == NodeHandle.Null)
             {
@@ -26,7 +26,7 @@ namespace PhenomenalViborg
             }
             else
             {
-                return GetFullNodePathRecursive(parent, network, newPath);
+                return GetFullNodePathRecursive(parent, network, newPath, serialSuffix);
             }
         }
     }
