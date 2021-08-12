@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Antilatency.DeviceNetwork;
 
-namespace PhenomenalViborg
+namespace PhenomenalViborg.MUCO
 {
     public static class MUCOAntilatencyUtils
     {

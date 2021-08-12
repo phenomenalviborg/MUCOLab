@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-namespace PhenomenalViborg
+namespace PhenomenalViborg.MUCO
 {
     using System;
     using System.Collections;
@@ -239,6 +239,8 @@ namespace PhenomenalViborg
             {
                 m_ParentEditor = parentEditor;
             }
+
+            // TODO: Add support for hooking into an active game instance.
         }
     }
 }
