@@ -17,7 +17,7 @@ namespace PhenomenalViborg.MUCO
         private Antilatency.DeviceNetwork.INetwork m_DeviceNetwork = null;
         private Antilatency.DeviceNetwork.ILibrary m_DeviceNetworkLibrary = null;
         private uint m_LastUpdateId = 0;
-        private UnityEvent OnDeviceNetworkChanged = new UnityEvent();
+        public UnityEvent OnDeviceNetworkChanged = new UnityEvent();
 
         [Header("Environment")]
         public string EnvironmentCode = null;
@@ -26,8 +26,37 @@ namespace PhenomenalViborg.MUCO
         private Antilatency.Alt.Environment.IEnvironment m_Environment = null;
         private Antilatency.Alt.Environment.Selector.ILibrary m_EnvironmentSelectorILibrary = null;
 
+        public Antilatency.DeviceNetwork.INetwork GetDeviceNetwork()
+        {
+            if (m_DeviceNetwork == null)
+            {
+                Debug.Log("Device network was null! Make sure the device network has been initalized before trying to access it!");
+                return null;
+            }
+
+            return m_DeviceNetwork;
+        }
+
+        public Antilatency.Alt.Environment.IEnvironment GetEnvironment()
+        {
+            if (m_Environment == null)
+            {
+                Debug.Log("Environment was null! Make sure the environment has been initalized before trying to access it!");
+                return null;
+            }
+
+            return m_Environment;
+        }
+
         private void Awake()
         {
+            MUCOManager[] managers = Object.FindObjectsOfType<MUCOManager>();
+            if (managers.Length > 1)
+            {
+                Debug.LogError("Multiple MUCOManagers detected!");
+                return;
+            }
+
             InitializeAntilatencyDeviceNetwork();
             InitializeAntilatencyEnvironment();
             if (m_DrawEnvironmentMarkers) DrawAntilatencyEnvironmentMarkers();
@@ -35,6 +64,7 @@ namespace PhenomenalViborg.MUCO
 
         private void Update()
         {
+            Debug.Log(m_DeviceNetwork.getNodes().Length);
             UpdateAntilatencyDeviceNetwork();
         }
 
