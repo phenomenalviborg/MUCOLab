@@ -16,6 +16,7 @@ namespace PhenomenalViborg.MUCO
 
     using Antilatency.DeviceNetwork;
 
+    [ExecuteAlways]
     public class MUCOAntilatencyDebuggerEditorWindow : OdinMenuEditorWindow
     {
         [MenuItem("MUCO/Antilatency Debugger")]
@@ -29,6 +30,7 @@ namespace PhenomenalViborg.MUCO
 
         private ILibrary m_Library = null;
         private INetwork m_NativeNetwork = null;
+        private bool m_UsingMOCOManagerNetowrk = false;
         private uint m_LastUpdateId = 0;
 
         private double m_TimeAtLastRefresh = 0.0f;
@@ -79,19 +81,17 @@ namespace PhenomenalViborg.MUCO
         protected override void Initialize()
         {
             base.Initialize();
+
+            EditorApplication.playModeStateChanged += OnPlaymodeStateChanged;
         }
 
-        protected void Awake()
+        private void OnPlaymodeStateChanged(PlayModeStateChange playModeState)
         {
-            InitializeAntilatencyDeviceNetwork();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            TerminateAntilatencyDeviceNetwork();
-
+            if (playModeState == PlayModeStateChange.ExitingPlayMode && m_UsingMOCOManagerNetowrk)
+            {
+                m_NativeNetwork = null;
+                m_UsingMOCOManagerNetowrk = false;
+            }
         }
 
         protected void OnInspectorUpdate()
@@ -107,13 +107,6 @@ namespace PhenomenalViborg.MUCO
 
         private void Refresh(bool hardRefresh = false)
         {
-            // Refresh m_AntilatencyDevices
-            if (hardRefresh)
-            {
-                TerminateAntilatencyDeviceNetwork();
-                InitializeAntilatencyDeviceNetwork();
-            }
-
             if (m_NativeNetwork != null)
             {
                 NodeHandle[] nodes = m_NativeNetwork.getNodes();
@@ -138,7 +131,12 @@ namespace PhenomenalViborg.MUCO
 
         private void InitializeAntilatencyDeviceNetwork()
         {
-            // Initialize m_Library and m_NativeNetwork
+            if (m_NativeNetwork != null)
+            {
+                Debug.Log("Network has already been initialized");
+                return;
+            }
+
             m_Library = Antilatency.DeviceNetwork.Library.load();
             if (m_Library == null)
             {
@@ -161,6 +159,27 @@ namespace PhenomenalViborg.MUCO
             {
                 Debug.LogError("Failed to create Antilatency Device Network");
             }
+
+            Refresh();
+        }
+
+        private void AttachToCurrentSession()
+        {
+            MUCOManager activeManager = UnityEngine.Object.FindObjectOfType<MUCOManager>();
+
+            if (activeManager == null)
+            {
+                Debug.LogError("Failed to find a MUCOManager.");
+            }
+
+            m_NativeNetwork = activeManager.GetDeviceNetwork();
+
+            if (m_NativeNetwork == null)
+            {
+                Debug.LogError("Failed to fetch device network from active manager.");
+            }
+
+            m_UsingMOCOManagerNetowrk = true;
 
             Refresh();
         }
@@ -218,19 +237,28 @@ namespace PhenomenalViborg.MUCO
                 m_ParentEditor.Refresh(true);
             }
 
-            [EnableIf("@m_ParentEditor.m_NativeNetwork == null")]
+            [Title("Editor")]
+            [EnableIf("@m_ParentEditor.m_NativeNetwork == null && !EditorApplication.isPlaying")]
             [Button("Initialize Antilatency Device Network")]
             void OnInitializeAntilatencyButtonPressed()
             {
                 m_ParentEditor.InitializeAntilatencyDeviceNetwork();
             }
 
-            [EnableIf("@m_ParentEditor.m_NativeNetwork != null")]
+            [EnableIf("@m_ParentEditor.m_NativeNetwork != null && !EditorApplication.isPlaying")]
             [Button("Terminate Antilatency Device Network")]
             void OnTerminateAntilatencyRefreshButtonPressed()
             {
                 m_ParentEditor.TerminateAntilatencyDeviceNetwork();
-                
+
+            }
+
+            [Title("Playmode")]
+            [EnableIf("@m_ParentEditor.m_NativeNetwork == null && EditorApplication.isPlaying")]
+            [Button("Attach to current session")]
+            void OnAttachToCurrentSessionButtonPressed()
+            {
+                m_ParentEditor.AttachToCurrentSession();
             }
 
             private MUCOAntilatencyDebuggerEditorWindow m_ParentEditor;
@@ -239,8 +267,6 @@ namespace PhenomenalViborg.MUCO
             {
                 m_ParentEditor = parentEditor;
             }
-
-            // TODO: Add support for hooking into an active game instance.
         }
     }
 }
