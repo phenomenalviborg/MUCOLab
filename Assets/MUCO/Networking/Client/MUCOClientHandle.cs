@@ -13,8 +13,8 @@ namespace PhenomenalViborg.MUCO.Networking
 
             Debug.Log($"[CLIENT] Message from server: {message}");
             MUCOLocalClient.s_Instance.ClientID = clientID;
-        
-            // TODO: Send welcome message to server
+
+            MUCOClientSend.WelcomeReceived();
         }
     }
 }

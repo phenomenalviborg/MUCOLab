@@ -18,6 +18,7 @@ using PhenomenalViborg.MUCO.Networking;
 
 namespace PhenomenalViborg.MUCO
 {
+    [ExecuteAlways]
     public class MUCOServerEditorWindow : OdinMenuEditorWindow
     {
         [MenuItem("MUCO/Dedicated Server")]
@@ -32,6 +33,14 @@ namespace PhenomenalViborg.MUCO
         {
             MUCOServer.ServerLog += OnServerLog;
             MUCOServer.StartServer(32, 26950);
+        }
+
+
+        private void Update()
+        {
+            // TODO: Create new networking thread "part 2"
+
+            MUCOThreadManagerNONMONO.UpdateMain();
         }
 
         private static void OnServerLog(String msg)

@@ -23,6 +23,9 @@ namespace PhenomenalViborg.MUCO.Networking
             }
         }
 
+        public delegate void PacketHandler(int fromClient, MUCOPacket packet);
+        public static Dictionary<int, PacketHandler> m_PacketHandlers = new Dictionary<int, PacketHandler>();
+
         public static void StartServer(int maxPlayers, int port)
         {
             MaxPlayers = maxPlayers;
@@ -64,6 +67,12 @@ namespace PhenomenalViborg.MUCO.Networking
             {
                 Clients.Add(i, new MUCOClient(i));
             }
+
+            m_PacketHandlers = new Dictionary<int, PacketHandler>()
+            {
+                { (int)ClientPackets.welcomeReceived, MUCOServerHandle.WelcomeRecived }
+            }; 
+            MUCOServer.DebugLog("Initialized packets.");
         }
     }
 }

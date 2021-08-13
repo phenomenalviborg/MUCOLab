@@ -114,6 +114,21 @@ namespace PhenomenalViborg.MUCO.Networking
                 }
             }
 
+            public void SendData(MUCOPacket packet)
+            {
+                try
+                {
+                    if (Socket != null)
+                    {
+                        m_NetworkStream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Debug.Log($"Error sending data to server via TCP: {exception}");
+                }
+            }
+
             private bool HandleData(byte[] data)
             {
                 int packetLenght = 0;

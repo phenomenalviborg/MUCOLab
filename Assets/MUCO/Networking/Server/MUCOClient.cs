@@ -23,6 +23,7 @@ namespace PhenomenalViborg.MUCO.Networking
             public TcpClient Socket;
             private readonly int m_ID;
             private NetworkStream m_NetworkStream;
+            private MUCOPacket m_ReceiveData;
             private byte[] m_ReceiveBuffer;
 
             public MUCOTcp(int id)
@@ -38,6 +39,7 @@ namespace PhenomenalViborg.MUCO.Networking
 
                 m_NetworkStream = Socket.GetStream();
 
+                m_ReceiveData = new MUCOPacket();
                 m_ReceiveBuffer = new byte[DataBufferSize];
 
                 m_NetworkStream.BeginRead(m_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
@@ -74,7 +76,7 @@ namespace PhenomenalViborg.MUCO.Networking
                     byte[] data = new byte[byteLength];
                     Array.Copy(m_ReceiveBuffer, data, byteLength);
 
-                    // TODO: handle data
+                    m_ReceiveData.Reset(HandleData(data));
 
                     m_NetworkStream.BeginRead(m_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
                 }
@@ -83,6 +85,54 @@ namespace PhenomenalViborg.MUCO.Networking
                     MUCOServer.DebugLog($"Error recieving TCP data: {exception}");
                     // TODO: disconnect
                 }
+            }
+
+            private bool HandleData(byte[] data)
+            {
+                int packetLenght = 0;
+
+                m_ReceiveData.SetBytes(data);
+
+                // If we have more than 4 bytes we know we have the start of a packet because an int consist of 4 bytes and the first data of any packet is an int representing the lenght of the packet.
+                if (m_ReceiveData.UnreadLength() >= 4)
+                {
+                    packetLenght = m_ReceiveData.ReadInt();
+                    if (packetLenght <= 0)
+                    {
+                        return true;
+                    }
+                }
+
+                while (packetLenght > 0 && packetLenght <= m_ReceiveData.UnreadLength())
+                {
+                    byte[] packetBytes = m_ReceiveData.ReadBytes(packetLenght);
+                    MUCOThreadManager.ExecuteOnMainThread(() =>
+                    {
+                        using (MUCOPacket packet = new MUCOPacket(packetBytes))
+                        {
+                            int packetID = packet.ReadInt();
+                            MUCOServer.m_PacketHandlers[packetID](m_ID, packet);
+                        }
+                    });
+
+                    packetLenght = 0;
+
+                    if (m_ReceiveData.UnreadLength() >= 4)
+                    {
+                        packetLenght = m_ReceiveData.ReadInt();
+                        if (packetLenght <= 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                if (packetLenght <= 1)
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
         
