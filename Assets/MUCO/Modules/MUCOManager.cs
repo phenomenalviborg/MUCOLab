@@ -64,7 +64,6 @@ namespace PhenomenalViborg.MUCO
 
         private void Update()
         {
-            Debug.Log(m_DeviceNetwork.getNodes().Length);
             UpdateAntilatencyDeviceNetwork();
         }
 

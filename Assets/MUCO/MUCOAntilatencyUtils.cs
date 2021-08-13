@@ -86,5 +86,58 @@ namespace PhenomenalViborg.MUCO
 
             return nodes[0];
         }
+
+        /// <summary>
+        /// Searches for all idle tracker nodes that are directly connected to USB socket.
+        /// </summary>
+        /// <returns>The array of idle tracker nodes connected directly to USB sockets.</returns>
+        public static NodeHandle[] GetUsbConnectedIdleTrackerNodes(INetwork deviceNetwork, Antilatency.Alt.Tracking.ILibrary trackingLibrary)
+        {
+            if (deviceNetwork == null)
+            {
+                Debug.LogError("DeviceNetwork was null.");
+                return new NodeHandle[0];
+            }
+
+            if (trackingLibrary == null)
+            {
+                Debug.LogError("TrackingLibrary was null.");
+                return new NodeHandle[0];
+            }
+
+            Antilatency.Alt.Tracking.ITrackingCotaskConstructor cotaskConstructor = trackingLibrary.createTrackingCotaskConstructor();
+            NodeHandle[] nodes = cotaskConstructor.findSupportedNodes(deviceNetwork);
+            nodes = nodes.Where(v => deviceNetwork.nodeGetParent(deviceNetwork.nodeGetParent(v)) == Antilatency.DeviceNetwork.NodeHandle.Null && deviceNetwork.nodeGetStatus(v) == NodeStatus.Idle).ToArray();
+
+            return nodes;
+        }
+
+        /// <summary>
+        /// Get the first idle tracker node connected directly to USB socket.
+        /// </summary>
+        /// <returns>The first idle tracker node connected directly to USB socket if exists, otherwise NodeHandle with value = -1 (InvalidNode).</returns>
+        public static NodeHandle GetUsbConnectedFirstIdleTrackerNode(INetwork deviceNetwork, Antilatency.Alt.Tracking.ILibrary trackingLibrary)
+        {
+            if (deviceNetwork == null)
+            {
+                Debug.LogError("DeviceNetwork was null.");
+                return new NodeHandle();
+            }
+
+            if (trackingLibrary == null)
+            {
+                Debug.LogError("TrackingLibrary was null.");
+                return new NodeHandle();
+            }
+
+            var nodes = GetUsbConnectedIdleTrackerNodes(deviceNetwork, trackingLibrary);
+
+            if (nodes.Length == 0)
+            {
+                return new NodeHandle();
+            }
+
+            return nodes[0];
+        }
     }
 }

@@ -1,17 +1,15 @@
-using Antilatency.DeviceNetwork;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
+using Antilatency.DeviceNetwork;
 
 namespace PhenomenalViborg.MUCO
 {
-    public class MUCOTrackerTag : MUCOTracker
+    public class MUCOTrackerUSB : MUCOTracker
     {
-        [Header("Tag")]
-        [SerializeField] private string HardwareTag;
-        
-        protected override NodeHandle GetAvailableTrackingNode()
+        protected override Antilatency.DeviceNetwork.NodeHandle GetAvailableTrackingNode()
         {
             if (m_MUCOManager == null)
             {
@@ -25,18 +23,17 @@ namespace PhenomenalViborg.MUCO
                 Debug.LogError("DeviceNetwork was null!");
                 return new NodeHandle();
             }
-
-            return MUCOAntilatencyUtils.GetFirstIdleTrackerNodeBySocketTag(HardwareTag, deviceNetwork, m_TrackingLibrary);
+            var s = MUCOAntilatencyUtils.GetUsbConnectedFirstIdleTrackerNode(deviceNetwork, m_TrackingLibrary);
+            return MUCOAntilatencyUtils.GetUsbConnectedFirstIdleTrackerNode(deviceNetwork, m_TrackingLibrary);
         }
 
-        protected override Pose GetPlacement()
+        protected override UnityEngine.Pose GetPlacement()
         {
-            return new Pose(Vector3.zero, Quaternion.Euler(Vector3.zero));
+            UnityEngine.Pose placement = new UnityEngine.Pose();
+            placement = m_TrackingLibrary.createPlacement("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            return placement;
         }
 
-        /// <summary>
-        /// Apply tracking data to a component's GameObject transform.
-        /// </summary>
         protected override void Update()
         {
             base.Update();
