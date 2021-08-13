@@ -1,21 +1,22 @@
 #if UNITY_EDITOR
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+using UnityEngine;
+using UnityEditor;
+
+using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
+using Sirenix.Utilities.Editor;
+using Sirenix.Utilities;
+
+using Antilatency.DeviceNetwork;
+
 namespace PhenomenalViborg.MUCO
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using UnityEngine;
-    using UnityEditor;
-
-    using Sirenix.OdinInspector;
-    using Sirenix.OdinInspector.Editor;
-    using Sirenix.Utilities.Editor;
-    using Sirenix.Utilities;
-
-    using Antilatency.DeviceNetwork;
-
     [ExecuteAlways]
     public class MUCOAntilatencyDebuggerEditorWindow : OdinMenuEditorWindow
     {
@@ -23,7 +24,6 @@ namespace PhenomenalViborg.MUCO
         private static void OpenWindow()
         {
             MUCOAntilatencyDebuggerEditorWindow window = GetWindow<MUCOAntilatencyDebuggerEditorWindow>();
-            // Nifty little trick to quickly position the window in the middle of the editor.
             window.position = GUIHelper.GetEditorWindowRect().AlignCenter(700, 700);
             window.titleContent = new GUIContent("MUCO | Antilatency Debugger");
         }
