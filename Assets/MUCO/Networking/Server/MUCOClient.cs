@@ -42,7 +42,22 @@ namespace PhenomenalViborg.MUCO.Networking
 
                 m_NetworkStream.BeginRead(m_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
 
-                // TODO: Send welcome packet
+                MUCOServerSend.Welcome(m_ID, "Welcome to the server!");
+            }
+
+            public void SendData(MUCOPacket packet)
+            {
+                try
+                {
+                    if (Socket != null)
+                    {
+                        m_NetworkStream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    MUCOServer.DebugLog($"Error sending data to client {m_ID} via TCP: {exception}");
+                }
             }
 
             private void ReceiveCallback(IAsyncResult asyncResult)

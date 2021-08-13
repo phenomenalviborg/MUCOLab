@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 509263012}
   - component: {fileID: 509263013}
   - component: {fileID: 509263014}
+  - component: {fileID: 509263015}
   m_Layer: 0
   m_Name: MUCOManager
   m_TagString: Untagged
@@ -188,6 +189,18 @@ MonoBehaviour:
   ServerIP: 127.0.0.1
   ServerPort: 26950
   ClientID: 0
+--- !u!114 &509263015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 509263011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90108df64fa93264888d1b141529de8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &965479113
 GameObject:
   m_ObjectHideFlags: 0

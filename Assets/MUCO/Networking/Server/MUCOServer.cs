@@ -56,7 +56,6 @@ namespace PhenomenalViborg.MUCO.Networking
             }
 
             DebugLog($"{client.Client.RemoteEndPoint} failed to connect: Server is full.");
-
         }
 
         private static void InitializeServerData()
