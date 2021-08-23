@@ -46,8 +46,6 @@ namespace PhenomenalViborg.MUCO.Networking
         {
             TCP = new MUCOClientTCP();
             UCP = new MUCOUDP();
-
-
         }
 
         public void ConnectToServer()

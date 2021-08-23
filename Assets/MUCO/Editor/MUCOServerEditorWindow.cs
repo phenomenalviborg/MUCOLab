@@ -29,47 +29,79 @@ namespace PhenomenalViborg.MUCO
             window.titleContent = new GUIContent("MUCO | Dedicated Server");
         }
 
-        private void StartServer()
-        {
-            MUCOServer.ServerLog += OnServerLog;
-            MUCOServer.StartServer(32, 26950);
-        }
-
-
-        private void Update()   
+        private void Update()
         {
             // TODO: Create new networking thread "part 2"
-
             MUCOThreadManagerNONMONO.UpdateMain();
-        }
-
-        private static void OnServerLog(String msg)
-        {
-            Debug.Log($"[SERVER] {msg}");
         }
 
         protected override OdinMenuTree BuildMenuTree()
         {
             OdinMenuTree tree = new OdinMenuTree();
 
-            tree.Add("Server", new ServerTab(this));
+            tree.Add("Server", new ServerTab());
 
             return tree;
         }
 
         public class ServerTab
         {
-            private MUCOServerEditorWindow m_ParentEditor;
+            private static ServerTab s_Instnace = null;
+            private OdinMenuTree m_ConsoleTree = null;
 
             [Button("Start Server")]
             private void OnStartServerButtonPressed()
             {
-                m_ParentEditor.StartServer();
+                s_Instnace = this;
+                MUCOServer.ServerLog += OnServerConsoleWriteLine;
+                MUCOServer.StartServer(32, 26950);
             }
 
-            public ServerTab(MUCOServerEditorWindow parentEditor)
+            [Button("Stop Server")]
+            private void OnStopServerButtonPressed()
             {
-                m_ParentEditor = parentEditor;
+                MUCOServer.StopServer();
+            }
+
+            private static void OnServerConsoleWriteLine(String msg)
+            {
+                s_Instnace.ConsoleWriteLine(msg);
+            }
+
+            public void ConsoleWriteLine(string msg)
+            {
+                OdinMenuItem newOdinMenuItem = new OdinMenuItem(m_ConsoleTree, msg, null);
+                newOdinMenuItem.Icon = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Plugins/Sirenix/Odin Inspector/Assets/Editor/Odin Inspector Logo.png", typeof(Texture2D));
+                m_ConsoleTree.MenuItems.Add(newOdinMenuItem);
+
+                m_ConsoleTree.MarkDirty();
+            }
+
+            [OnInspectorGUI]
+            private void DrawTree()
+            {
+                if (m_ConsoleTree == null)
+                {
+                    m_ConsoleTree = new OdinMenuTree();
+                    m_ConsoleTree.Config.EXPERIMENTAL_INTERNAL_DrawFlatTreeFastNoLayout = true;
+                    m_ConsoleTree.Config.DefaultMenuStyle.SetHeight(18);
+                }
+
+                GUILayout.FlexibleSpace();
+
+                GUILayout.Label("Console");
+                EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 1), new Color(0.345f, 0.345f, 0.345f, 1.0f));
+                GUILayout.BeginVertical(GUILayoutOptions.Height(200));
+                m_ConsoleTree.DrawMenuTree();
+                GUILayout.EndVertical();
+                EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false, 1), new Color(0.345f, 0.345f, 0.345f, 1.0f));
+            }
+
+            [Button("Clear Console")]
+            private void ClearConsole()
+            {
+                // The tree will be re-calculated on tnext DrawTree call.
+                m_ConsoleTree = null;
             }
         }
     }

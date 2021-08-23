@@ -47,6 +47,18 @@ namespace PhenomenalViborg.MUCO.Networking
             DebugLog($"Server started on {Port}.");
         }
 
+        public static void StopServer()
+        {
+            // TODO: Disconnect all clients
+            m_TcpListener.Stop();
+            m_UDPListener.Close();
+
+            foreach (Delegate listener in ServerLog.GetInvocationList())
+            {
+                ServerLog -= (ServerLogEventHandler)listener;
+            }
+        }
+
         private static void TCPConnectCallback(IAsyncResult asyncResult)
         {
             TcpClient client = m_TcpListener.EndAcceptTcpClient(asyncResult);
