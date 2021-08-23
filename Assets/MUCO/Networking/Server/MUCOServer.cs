@@ -11,7 +11,9 @@ namespace PhenomenalViborg.MUCO.Networking
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
         public static Dictionary<int, MUCOClient> Clients = new Dictionary<int, MUCOClient>();
+
         private static TcpListener m_TcpListener = null;
+        private static UdpClient m_UDPListener = null;
 
         public static event ServerLogEventHandler ServerLog;
         public delegate void ServerLogEventHandler(string message);
@@ -24,7 +26,7 @@ namespace PhenomenalViborg.MUCO.Networking
         }
 
         public delegate void PacketHandler(int fromClient, MUCOPacket packet);
-        public static Dictionary<int, PacketHandler> m_PacketHandlers = new Dictionary<int, PacketHandler>();
+        public static Dictionary<int, PacketHandler> s_PacketHandlers = new Dictionary<int, PacketHandler>();
 
         public static void StartServer(int maxPlayers, int port)
         {
@@ -38,6 +40,9 @@ namespace PhenomenalViborg.MUCO.Networking
             m_TcpListener = new TcpListener(IPAddress.Any, Port);
             m_TcpListener.Start();
             m_TcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
+
+            m_UDPListener = new UdpClient(Port);
+            m_UDPListener.BeginReceive(UDPReceiveCallback, null);
 
             DebugLog($"Server started on {Port}.");
         }
@@ -61,6 +66,62 @@ namespace PhenomenalViborg.MUCO.Networking
             DebugLog($"{client.Client.RemoteEndPoint} failed to connect: Server is full.");
         }
 
+        private static void UDPReceiveCallback(IAsyncResult asyncResult)
+        {
+            try
+            {
+                IPEndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                byte[] data = m_UDPListener.EndReceive(asyncResult, ref clientEndPoint);
+                m_UDPListener.BeginReceive(UDPReceiveCallback, null);
+
+                if (data.Length < 4)
+                {
+                    return;
+                }
+
+                using (MUCOPacket packet = new MUCOPacket(data))
+                {
+                    int clientId = packet.ReadInt();
+
+                    if (clientId == 0)
+                    {
+                        // This should neaver be true, but if it is, this block will prevent a server crash.
+                        return;
+                    }
+
+                    if (Clients[clientId].UDP.EndPoint == null)
+                    {
+                        Clients[clientId].UDP.Connect(clientEndPoint);
+                        return;
+                    }
+
+                    if (Clients[clientId].UDP.EndPoint.ToString() == clientEndPoint.ToString())
+                    {
+                        Clients[clientId].UDP.HandleData(packet);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                DebugLog($"Error receiving UDP data: {exception}");
+            }
+        }
+
+        public static void SendUDPData(IPEndPoint clientEndPoint, MUCOPacket packet)
+        {
+            try
+            {
+                if(clientEndPoint != null)
+                {
+                    m_UDPListener.BeginSend(packet.ToArray(), packet.Length(), clientEndPoint, null, null);
+                }
+            }
+            catch (Exception exception)
+            {
+                DebugLog($"Error sending data to {clientEndPoint} via UDP: {exception}");
+            }
+        }
+
         private static void InitializeServerData()
         {
             for (int i = 1; i <= MaxPlayers; i++)
@@ -68,10 +129,12 @@ namespace PhenomenalViborg.MUCO.Networking
                 Clients.Add(i, new MUCOClient(i));
             }
 
-            m_PacketHandlers = new Dictionary<int, PacketHandler>()
+            s_PacketHandlers = new Dictionary<int, PacketHandler>()
             {
-                { (int)ClientPackets.welcomeReceived, MUCOServerHandle.WelcomeRecived }
-            }; 
+                { (int)ClientPackets.welcomeReceived, MUCOServerHandle.WelcomeRecived },
+                { (int)ClientPackets.udpTestReceived, MUCOServerHandle.UDPTestReceived }
+
+            };
             MUCOServer.DebugLog("Initialized packets.");
         }
     }

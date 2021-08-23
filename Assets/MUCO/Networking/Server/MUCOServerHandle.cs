@@ -19,6 +19,13 @@ namespace PhenomenalViborg.MUCO.Networking
 
             // TODO: Send player into game
         }
+
+        public static void UDPTestReceived(int fromClient, MUCOPacket packet)
+        {
+            string msg = packet.ReadString();
+
+            MUCOServer.DebugLog($"Received packet via UDP. Contains message: {msg}");
+        }
     }
 }
 

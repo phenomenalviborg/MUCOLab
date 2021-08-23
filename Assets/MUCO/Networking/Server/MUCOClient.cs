@@ -11,11 +11,13 @@ namespace PhenomenalViborg.MUCO.Networking
         public static int DataBufferSize = 4096;
         public int ID;
         public MUCOTcp TCP;
+        public MUCOUDP UDP;
 
         public MUCOClient(int clientID)
         {
             ID = clientID;
             TCP = new MUCOTcp(ID);
+            UDP = new MUCOUDP(ID);
         }
 
         public class MUCOTcp
@@ -111,7 +113,7 @@ namespace PhenomenalViborg.MUCO.Networking
                         using (MUCOPacket packet = new MUCOPacket(packetBytes))
                         {
                             int packetID = packet.ReadInt();
-                            MUCOServer.m_PacketHandlers[packetID](m_ID, packet);
+                            MUCOServer.s_PacketHandlers[packetID](m_ID, packet);
                         }
                     });
 
@@ -136,5 +138,42 @@ namespace PhenomenalViborg.MUCO.Networking
             }
         }
         
+        public class MUCOUDP
+        {
+            public IPEndPoint EndPoint;
+
+            private int m_ID;
+
+            public MUCOUDP(int id)
+            {
+                m_ID = id;
+            }
+            
+            public void Connect(IPEndPoint endPoint)
+            {
+                EndPoint = endPoint;
+                MUCOServerSend.UDPTest(m_ID);
+            }
+
+            public void SendData(MUCOPacket packet)
+            {
+                MUCOServer.SendUDPData(EndPoint, packet);
+            }
+
+            public void HandleData(MUCOPacket packet)
+            {
+                int packetLength = packet.ReadInt();
+                byte[] packetBytes = packet.ReadBytes(packetLength);
+
+                MUCOThreadManager.ExecuteOnMainThread(() =>
+                {
+                    using (MUCOPacket packet = new MUCOPacket(packetBytes))
+                    {
+                        int packetId = packet.ReadInt();
+                        MUCOServer.s_PacketHandlers[packetId](m_ID, packet);
+                    }
+                });
+            }
+        }
     }
 }

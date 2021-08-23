@@ -12,6 +12,12 @@ namespace PhenomenalViborg.MUCO.Networking
             MUCOLocalClient.s_Instance.TCP.SendData(packet);
         }
 
+        private static void SendUDPData(MUCOPacket packet)
+        {
+            packet.WriteLength();
+            MUCOLocalClient.s_Instance.UCP.SendData(packet);
+        }
+
         #region Packets
         public static void WelcomeReceived()
         {
@@ -21,6 +27,16 @@ namespace PhenomenalViborg.MUCO.Networking
                 packet.Write("USERNAME");
 
                 SendTCPData(packet);
+            }
+        }
+
+        public static void UDPTestReceived()
+        {
+            using (MUCOPacket packet = new MUCOPacket((int)ClientPackets.udpTestReceived))
+            {
+                packet.Write("Received a UDP packet.");
+
+                SendUDPData(packet);
             }
         }
         #endregion

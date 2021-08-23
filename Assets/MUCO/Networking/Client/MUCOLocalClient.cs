@@ -17,6 +17,7 @@ namespace PhenomenalViborg.MUCO.Networking
         public int ServerPort = 26950;
         public int ClientID = 0;
         public MUCOClientTCP TCP;
+        public MUCOUDP UCP;
 
         private delegate void PacketHandler(MUCOPacket packet);
         private static Dictionary<int, PacketHandler> m_PacketHandlers;
@@ -44,6 +45,9 @@ namespace PhenomenalViborg.MUCO.Networking
         private void Start()
         {
             TCP = new MUCOClientTCP();
+            UCP = new MUCOUDP();
+
+
         }
 
         public void ConnectToServer()
@@ -178,11 +182,93 @@ namespace PhenomenalViborg.MUCO.Networking
             }
         }
 
+        public class MUCOUDP
+        {
+            public UdpClient Socket;
+            public IPEndPoint EndPoint;
+
+            public MUCOUDP()
+            {
+                EndPoint = new IPEndPoint(IPAddress.Parse(s_Instance.ServerIP), s_Instance.ServerPort);
+            }
+
+            public void Connect(int localPort)
+            {
+                Socket = new UdpClient(localPort);
+
+                Socket.Connect(EndPoint);
+                Socket.BeginReceive(ReceiveCallback, null);
+
+                using (MUCOPacket packet = new MUCOPacket())
+                {
+                    SendData(packet);
+                }
+            }
+
+            public void SendData(MUCOPacket packet)
+            {
+                try
+                {
+                    packet.InsertInt(s_Instance.ClientID);
+                    if (Socket != null)
+                    {
+                        Socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Debug.Log($"Error sending data to server via UDP: {exception}");
+
+                }
+            }
+
+            private void ReceiveCallback(IAsyncResult asyncResult)
+            {
+                try
+                {
+                    byte[] data = Socket.EndReceive(asyncResult, ref EndPoint);
+                    Socket.BeginReceive(ReceiveCallback, null);
+
+                    if (data.Length < 4)
+                    {
+                        // TODO: disconnect, maybe? idk?.. read docs.
+                        return;
+                    }
+
+                    HandleData(data);
+                }
+                catch
+                {
+                    // TODO: disconnect, maybe? idk?.. read docs.
+                }
+            }
+
+            private void HandleData(byte[] data)
+            {
+                using (MUCOPacket packet = new MUCOPacket(data))
+                {
+                    int packetLength = packet.ReadInt();
+                    data = packet.ReadBytes(packetLength);
+                }
+
+                MUCOThreadManager.ExecuteOnMainThread(() =>
+                {
+                    using (MUCOPacket packet = new MUCOPacket(data))
+                    {
+                        int packetId = packet.ReadInt();
+                        m_PacketHandlers[packetId](packet);
+                    }
+                });
+            }
+        }
+
         private void InitializeClientData()
         {
             m_PacketHandlers = new Dictionary<int, PacketHandler>()
             {
-                { (int)ServerPackets.welcome, MUCOClientHandle.Welcome }
+                { (int)ServerPackets.welcome, MUCOClientHandle.Welcome },
+                { (int)ServerPackets.udpTest, MUCOClientHandle.UDPTest }
+
             };
             Debug.Log("[CLIENT] Initialized packets.");
         }

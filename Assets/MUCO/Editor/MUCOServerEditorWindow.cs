@@ -36,7 +36,7 @@ namespace PhenomenalViborg.MUCO
         }
 
 
-        private void Update()
+        private void Update()   
         {
             // TODO: Create new networking thread "part 2"
 
