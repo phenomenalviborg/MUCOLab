@@ -74,7 +74,7 @@ namespace PhenomenalViborg.MUCO.Networking
                     int byteLength = m_NetworkStream.EndRead(asyncResult);
                     if (byteLength <= 0)
                     {
-                        // TODO: disconnect
+                        MUCOServer.Clients[m_ID].Disconnect();
                         return;
                     }
 
@@ -88,7 +88,7 @@ namespace PhenomenalViborg.MUCO.Networking
                 catch (Exception exception)
                 {
                     MUCOServer.DebugLog($"Error recieving TCP data: {exception}");
-                    // TODO: disconnect
+                    MUCOServer.Clients[m_ID].Disconnect();
                 }
             }
 
@@ -139,6 +139,15 @@ namespace PhenomenalViborg.MUCO.Networking
 
                 return false;
             }
+
+            public void Disconnect()
+            {
+                Socket.Close();
+                m_NetworkStream = null;
+                m_ReceiveData = null;
+                m_ReceiveBuffer = null;
+                Socket = null;
+            }
         }
 
         public class MUCOUDP
@@ -176,6 +185,11 @@ namespace PhenomenalViborg.MUCO.Networking
                     }
                 });
             }
+
+            public void Disconnect()
+            {
+                EndPoint = null;
+            }
         }
 
         public void SendIntoGame()
@@ -183,7 +197,7 @@ namespace PhenomenalViborg.MUCO.Networking
             Player = new MUCOPlayer(ID, new Vector3(0.0f, 0.0f, 0.0f));
 
             // Spawn other players that are already in the game for this client.
-            foreach(MUCOClient client in MUCOServer.Clients.Values)
+            foreach (MUCOClient client in MUCOServer.Clients.Values)
             {
                 if (client.Player != null)
                 {
@@ -195,14 +209,28 @@ namespace PhenomenalViborg.MUCO.Networking
             }
 
             // Spawn this player for all other clients, includeing this client.
-            foreach(MUCOClient client in MUCOServer.Clients.Values)
+            foreach (MUCOClient client in MUCOServer.Clients.Values)
             {
-                if(client.Player != null)
+                if (client.Player != null)
                 {
                     MUCOServerSend.SpawnPlayer(client.ID, Player);
                 }
             }
 
         }
+       
+        private void Disconnect()
+        {
+            Debug.Log($"{TCP.Socket.Client.RemoteEndPoint} has disconnected.");
+
+            MUCOThreadManager.ExecuteOnMainThread(() =>
+            { 
+                Player = null;
+            });
+
+            TCP.Disconnect();
+            UDP.Disconnect();
+        }
+
     }
 }

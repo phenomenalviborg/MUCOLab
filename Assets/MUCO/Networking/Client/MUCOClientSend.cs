@@ -15,7 +15,7 @@ namespace PhenomenalViborg.MUCO.Networking
         private static void SendUDPData(MUCOPacket packet)
         {
             packet.WriteLength();
-            MUCOLocalClient.s_Instance.UCP.SendData(packet);
+            MUCOLocalClient.s_Instance.UDP.SendData(packet);
         }
 
         #region Packets

@@ -12,15 +12,17 @@ namespace PhenomenalViborg.MUCO.Networking
     public class MUCOLocalClient : MonoBehaviour
     {
         public static MUCOLocalClient s_Instance;
-        public static int DataBufferSize = 4096;
+        public static int s_DataBufferSize = 4096;
         public string ServerIP = "127.0.0.1";
         public int ServerPort = 26950;
         public int ClientID = 0;
         public MUCOClientTCP TCP;
-        public MUCOUDP UCP;
+        public MUCOUDP UDP;
 
         private delegate void PacketHandler(MUCOPacket packet);
-        private static Dictionary<int, PacketHandler> m_PacketHandlers;
+        private static Dictionary<int, PacketHandler> s_PacketHandlers;
+
+        private bool m_IsConnected = false;
 
         // TMP
         [Button("Connect To Server")]
@@ -45,12 +47,18 @@ namespace PhenomenalViborg.MUCO.Networking
         private void Start()
         {
             TCP = new MUCOClientTCP();
-            UCP = new MUCOUDP();
+            UDP = new MUCOUDP();
+        }
+
+        private void OnApplicationQuit()
+        {
+            Disconnect();
         }
 
         public void ConnectToServer()
         {
             InitializeClientData();
+            m_IsConnected = true;
             TCP.Connect();
         }
 
@@ -66,11 +74,11 @@ namespace PhenomenalViborg.MUCO.Networking
             {
                 Socket = new TcpClient
                 {
-                    ReceiveBufferSize = DataBufferSize,
-                    SendBufferSize = DataBufferSize
+                    ReceiveBufferSize = s_DataBufferSize,
+                    SendBufferSize = s_DataBufferSize
                 };
 
-                m_ReceiveBuffer = new byte[DataBufferSize];
+                m_ReceiveBuffer = new byte[s_DataBufferSize];
                 Socket.BeginConnect(s_Instance.ServerIP, s_Instance.ServerPort, ConnectCallback, Socket);
             }
 
@@ -87,7 +95,7 @@ namespace PhenomenalViborg.MUCO.Networking
 
                 m_ReceiveData = new MUCOPacket();
 
-                m_NetworkStream.BeginRead(m_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
+                m_NetworkStream.BeginRead(m_ReceiveBuffer, 0, s_DataBufferSize, ReceiveCallback, null);
             }
 
             private void ReceiveCallback(IAsyncResult asyncResult)
@@ -97,7 +105,7 @@ namespace PhenomenalViborg.MUCO.Networking
                     int byteLength = m_NetworkStream.EndRead(asyncResult);
                     if (byteLength <= 0)
                     {
-                        // TODO: disconnect
+                        s_Instance.Disconnect();
                         return;
                     }
 
@@ -107,12 +115,12 @@ namespace PhenomenalViborg.MUCO.Networking
                     // HandleData returns of the Packet should be reset; there might be more data in the buffer, TCP will sometimes send half packages.
                     m_ReceiveData.Reset(HandleData(data));
 
-                    m_NetworkStream.BeginRead(m_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
+                    m_NetworkStream.BeginRead(m_ReceiveBuffer, 0, s_DataBufferSize, ReceiveCallback, null);
                 }
                 catch (Exception exception)
                 {
                     Debug.LogError($"Error recieving TCP data: {exception}");
-                    // TODO: disconnect
+                    Disconnect();
                 }
             }
 
@@ -155,7 +163,7 @@ namespace PhenomenalViborg.MUCO.Networking
                         using (MUCOPacket packet = new MUCOPacket(packetBytes))
                         {
                             int packetID = packet.ReadInt();
-                            m_PacketHandlers[packetID](packet);
+                            s_PacketHandlers[packetID](packet);
                         }
                     });
 
@@ -177,6 +185,16 @@ namespace PhenomenalViborg.MUCO.Networking
                 }
 
                 return false;
+            }
+
+            private void Disconnect()
+            {
+                s_Instance.Disconnect();
+
+                m_NetworkStream = null;
+                m_ReceiveData = null;
+                m_ReceiveBuffer = null;
+                Socket = null;
             }
         }
 
@@ -229,7 +247,7 @@ namespace PhenomenalViborg.MUCO.Networking
 
                     if (data.Length < 4)
                     {
-                        // TODO: disconnect, maybe? idk?.. read docs.
+                        s_Instance.Disconnect();
                         return;
                     }
 
@@ -237,7 +255,7 @@ namespace PhenomenalViborg.MUCO.Networking
                 }
                 catch
                 {
-                    // TODO: disconnect, maybe? idk?.. read docs.
+                    Disconnect();
                 }
             }
 
@@ -254,15 +272,23 @@ namespace PhenomenalViborg.MUCO.Networking
                     using (MUCOPacket packet = new MUCOPacket(data))
                     {
                         int packetId = packet.ReadInt();
-                        m_PacketHandlers[packetId](packet);
+                        s_PacketHandlers[packetId](packet);
                     }
                 });
+            }
+
+            private void Disconnect()
+            {
+                s_Instance.Disconnect();
+
+                EndPoint = null;
+                Socket = null;
             }
         }
 
         private void InitializeClientData()
         {
-            m_PacketHandlers = new Dictionary<int, PacketHandler>()
+            s_PacketHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)ServerPackets.welcome, MUCOClientHandle.Welcome },
                 { (int)ServerPackets.spawnPlayer, MUCOClientHandle.SpawnPlayer },
@@ -279,5 +305,19 @@ namespace PhenomenalViborg.MUCO.Networking
                 ConnectToServer();
             }
         }
+
+        private void Disconnect()
+        {
+            if (m_IsConnected)
+            {
+                m_IsConnected = false;
+                TCP.Socket.Close();
+                UDP.Socket.Close();
+
+                Debug.Log("Disconnected from server.");
+            }
+        }
     }
 }
+
+// https://github.com/tom-weiland/tcp-udp-networking/tree/tutorial-part5

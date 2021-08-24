@@ -16,7 +16,7 @@ namespace PhenomenalViborg.MUCO.Networking
             MUCOLocalClient.s_Instance.ClientID = clientID;
             MUCOClientSend.WelcomeReceived();
 
-            MUCOLocalClient.s_Instance.UCP.Connect(((IPEndPoint)MUCOLocalClient.s_Instance.TCP.Socket.Client.LocalEndPoint).Port);
+            MUCOLocalClient.s_Instance.UDP.Connect(((IPEndPoint)MUCOLocalClient.s_Instance.TCP.Socket.Client.LocalEndPoint).Port);
         }
 
         public static void SpawnPlayer(MUCOPacket packet)

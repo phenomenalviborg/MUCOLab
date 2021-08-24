@@ -52,7 +52,6 @@ namespace PhenomenalViborg.MUCO.Networking
         public static void StopServer()
         {
             // TODO: Disconnect all clients
-            Clients.Clear();
 
             m_TcpListener.Stop();
             m_UDPListener.Close();
