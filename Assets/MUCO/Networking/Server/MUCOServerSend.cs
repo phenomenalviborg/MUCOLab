@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PhenomenalViborg.MUCO.Networking
 {
     public class MUCOServerSend
     {
+        #region TCPSenders
         private static void SendTCPData(int toClient, MUCOPacket packet)
         {
             packet.WriteLength();
@@ -31,7 +33,9 @@ namespace PhenomenalViborg.MUCO.Networking
                 }
             }
         }
+        #endregion
 
+        #region UDPSenders
         private static void SendUDPData(int toClient, MUCOPacket packet)
         {
             packet.WriteLength();
@@ -58,8 +62,9 @@ namespace PhenomenalViborg.MUCO.Networking
                 }
             }
         }
+        #endregion
 
-        #region packets
+        #region Packets
         public static void Welcome(int toClient, string message)
         {
             using (MUCOPacket packet = new MUCOPacket((int)ServerPackets.welcome))
@@ -71,13 +76,27 @@ namespace PhenomenalViborg.MUCO.Networking
             }
         }
 
-        public static void UDPTest(int toClient)
+        public static void SpawnPlayer(int toClient, MUCOPlayer player)
         {
-            using (MUCOPacket packet = new MUCOPacket((int)ServerPackets.udpTest))
+            using (MUCOPacket packet = new MUCOPacket((int)ServerPackets.spawnPlayer))
             {
-                packet.Write("A test packet for UDP.");
+                packet.Write(player.ID);
+                packet.Write(player.Position);
+                packet.Write(player.Rotation);
 
-                SendUDPData(toClient, packet);
+                SendTCPData(toClient, packet);
+            }
+        }
+
+        public static void PlayerMovement(int exceptClient, Vector3 position, Quaternion rotation)
+        {
+            using (MUCOPacket packet = new MUCOPacket((int)ServerPackets.playerMovement))
+            {
+                packet.Write(exceptClient);
+                packet.Write(position);
+                packet.Write(rotation);
+
+                SendUDPDataToAll(exceptClient, packet);
             }
         }
         #endregion

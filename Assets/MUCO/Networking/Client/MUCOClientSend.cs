@@ -30,11 +30,12 @@ namespace PhenomenalViborg.MUCO.Networking
             }
         }
 
-        public static void UDPTestReceived()
+        public static void PlayerMovement()
         {
-            using (MUCOPacket packet = new MUCOPacket((int)ClientPackets.udpTestReceived))
+            using (MUCOPacket packet = new MUCOPacket((int)ClientPackets.playerMovement))
             {
-                packet.Write("Received a UDP packet.");
+                packet.Write(MUCOManager.Players[MUCOLocalClient.s_Instance.ClientID].transform.position);
+                packet.Write(MUCOManager.Players[MUCOLocalClient.s_Instance.ClientID].transform.rotation);
 
                 SendUDPData(packet);
             }

@@ -19,12 +19,23 @@ namespace PhenomenalViborg.MUCO.Networking
             MUCOLocalClient.s_Instance.UCP.Connect(((IPEndPoint)MUCOLocalClient.s_Instance.TCP.Socket.Client.LocalEndPoint).Port);
         }
 
-        public static void UDPTest(MUCOPacket packet)
+        public static void SpawnPlayer(MUCOPacket packet)
         {
-            string msg = packet.ReadString();
+            int id = packet.ReadInt();
+            Vector3 position = packet.ReadVector3();
+            Quaternion rotation = packet.ReadQuaternion();
 
-            Debug.Log($"[CLIENT] Received packet via UDP. Contains message: {msg}");
-            MUCOClientSend.UDPTestReceived();
+            MUCOManager.s_Instance.SpawnPlayer(id, position, rotation);
+        }
+
+        public static void PlayerMovement(MUCOPacket packet)
+        {
+            int id = packet.ReadInt();
+            Vector3 position = packet.ReadVector3();
+            Quaternion rotation = packet.ReadQuaternion();
+
+            MUCOManager.Players[id].transform.position = position;
+            MUCOManager.Players[id].transform.rotation = rotation;
         }
     }
 }

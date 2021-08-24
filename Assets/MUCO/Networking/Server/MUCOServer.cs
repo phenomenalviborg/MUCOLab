@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using UnityEngine;
 
 namespace PhenomenalViborg.MUCO.Networking
 {
@@ -19,6 +20,7 @@ namespace PhenomenalViborg.MUCO.Networking
         public delegate void ServerLogEventHandler(string message);
         public static void DebugLog(string message)
         {
+            Debug.Log(message);
             if (ServerLog != null)
             {
                 ServerLog(message);
@@ -50,6 +52,8 @@ namespace PhenomenalViborg.MUCO.Networking
         public static void StopServer()
         {
             // TODO: Disconnect all clients
+            Clients.Clear();
+
             m_TcpListener.Stop();
             m_UDPListener.Close();
 
@@ -144,8 +148,7 @@ namespace PhenomenalViborg.MUCO.Networking
             s_PacketHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)ClientPackets.welcomeReceived, MUCOServerHandle.WelcomeRecived },
-                { (int)ClientPackets.udpTestReceived, MUCOServerHandle.UDPTestReceived }
-
+                { (int)ClientPackets.playerMovement, MUCOServerHandle.PlayerMovement },
             };
             MUCOServer.DebugLog("Initialized packets.");
         }

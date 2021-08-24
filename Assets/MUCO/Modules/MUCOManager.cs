@@ -9,6 +9,7 @@ using UnityEngine.Events;
 using Antilatency.DeviceNetwork;
 using Antilatency.Alt.Environment;
 
+// Singleton
 namespace PhenomenalViborg.MUCO
 {
     public class MUCOManager : MonoBehaviour
@@ -26,40 +27,33 @@ namespace PhenomenalViborg.MUCO
         private Antilatency.Alt.Environment.IEnvironment m_Environment = null;
         private Antilatency.Alt.Environment.Selector.ILibrary m_EnvironmentSelectorILibrary = null;
 
-        public Antilatency.DeviceNetwork.INetwork GetDeviceNetwork()
-        {
-            if (m_DeviceNetwork == null)
-            {
-                Debug.Log("Device network was null! Make sure the device network has been initalized before trying to access it!");
-                return null;
-            }
+        [Header("Player Management")]
+        public GameObject LocalPlayerPrefab = null;
+        public GameObject RemotePlayerPrefab = null;
+        // TODO: Don't use GameObject, use something more specific
+        public static Dictionary<int, MUCOTMPPlayerManager> Players = new Dictionary<int, MUCOTMPPlayerManager>();
 
-            return m_DeviceNetwork;
-        }
-
-        public Antilatency.Alt.Environment.IEnvironment GetEnvironment()
-        {
-            if (m_Environment == null)
-            {
-                Debug.Log("Environment was null! Make sure the environment has been initalized before trying to access it!");
-                return null;
-            }
-
-            return m_Environment;
-        }
+        [HideInInspector] public static MUCOManager s_Instance;
 
         private void Awake()
         {
-            MUCOManager[] managers = Object.FindObjectsOfType<MUCOManager>();
-            if (managers.Length > 1)
+            if (s_Instance == null)
             {
-                Debug.LogError("Multiple MUCOManagers detected!");
-                return;
+                s_Instance = this;
+            }
+            else if (s_Instance != null)
+            {
+                Debug.Log("Instance already exists, destroying object!");
+                Destroy(this);
             }
 
             InitializeAntilatencyDeviceNetwork();
+
             InitializeAntilatencyEnvironment();
-            if (m_DrawEnvironmentMarkers) DrawAntilatencyEnvironmentMarkers();
+            if (m_DrawEnvironmentMarkers)
+            {
+                DrawAntilatencyEnvironmentMarkers();
+            }
         }
 
         private void Update()
@@ -72,7 +66,27 @@ namespace PhenomenalViborg.MUCO
             TerminateAntilatencyDeviceNetwork();
         }
 
-        // AntilatencyDeviceNetwork
+        #region PlayerManagement
+        public void SpawnPlayer(int id, Vector3 position, Quaternion rotation)
+        {
+            GameObject player = Instantiate((Networking.MUCOLocalClient.s_Instance.ClientID == id) ? LocalPlayerPrefab : RemotePlayerPrefab, position, rotation);
+            player.GetComponent<MUCOTMPPlayerManager>().ID = id;
+            Players.Add(id, player.GetComponent<MUCOTMPPlayerManager>());
+        }
+        #endregion
+
+        #region AntilatencyDeviceNetwork
+        public Antilatency.DeviceNetwork.INetwork GetDeviceNetwork()
+        {
+            if (m_DeviceNetwork == null)
+            {
+                Debug.Log("Device network was null! Make sure the device network has been initalized before trying to access it!");
+                return null;
+            }
+
+            return m_DeviceNetwork;
+        }
+
         private void InitializeAntilatencyDeviceNetwork()
         {
             m_DeviceNetworkLibrary = Antilatency.DeviceNetwork.Library.load();
@@ -124,8 +138,20 @@ namespace PhenomenalViborg.MUCO
                 m_DeviceNetwork = null;
             }
         }
+        #endregion
 
-        // AntilatencyEnvironment
+        #region AntilatencyEnvironment
+        public Antilatency.Alt.Environment.IEnvironment GetEnvironment()
+        {
+            if (m_Environment == null)
+            {
+                Debug.Log("Environment was null! Make sure the environment has been initalized before trying to access it!");
+                return null;
+            }
+
+            return m_Environment;
+        }
+
         private void InitializeAntilatencyEnvironment()
         {
             if (m_Environment != null)
@@ -171,5 +197,6 @@ namespace PhenomenalViborg.MUCO
                 GameObject marker = Instantiate(m_EnvironmentMarkerPrefab, markerPosition, Quaternion.identity, this.transform);
             }
         }
+        #endregion
     }
 }

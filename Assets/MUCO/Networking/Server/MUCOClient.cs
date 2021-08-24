@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using UnityEngine;
 
 namespace PhenomenalViborg.MUCO.Networking
 {
@@ -12,6 +13,7 @@ namespace PhenomenalViborg.MUCO.Networking
         public int ID;
         public MUCOTcp TCP;
         public MUCOUDP UDP;
+        public MUCOPlayer Player;
 
         public MUCOClient(int clientID)
         {
@@ -23,6 +25,7 @@ namespace PhenomenalViborg.MUCO.Networking
         public class MUCOTcp
         {
             public TcpClient Socket;
+
             private readonly int m_ID;
             private NetworkStream m_NetworkStream;
             private MUCOPacket m_ReceiveData;
@@ -137,7 +140,7 @@ namespace PhenomenalViborg.MUCO.Networking
                 return false;
             }
         }
-        
+
         public class MUCOUDP
         {
             public IPEndPoint EndPoint;
@@ -148,11 +151,10 @@ namespace PhenomenalViborg.MUCO.Networking
             {
                 m_ID = id;
             }
-            
+
             public void Connect(IPEndPoint endPoint)
             {
                 EndPoint = endPoint;
-                MUCOServerSend.UDPTest(m_ID);
             }
 
             public void SendData(MUCOPacket packet)
@@ -174,6 +176,33 @@ namespace PhenomenalViborg.MUCO.Networking
                     }
                 });
             }
+        }
+
+        public void SendIntoGame()
+        {
+            Player = new MUCOPlayer(ID, new Vector3(0.0f, 0.0f, 0.0f));
+
+            // Spawn other players that are already in the game for this client.
+            foreach(MUCOClient client in MUCOServer.Clients.Values)
+            {
+                if (client.Player != null)
+                {
+                    if (client.ID != ID)
+                    {
+                        MUCOServerSend.SpawnPlayer(ID, client.Player);
+                    }
+                }
+            }
+
+            // Spawn this player for all other clients, includeing this client.
+            foreach(MUCOClient client in MUCOServer.Clients.Values)
+            {
+                if(client.Player != null)
+                {
+                    MUCOServerSend.SpawnPlayer(client.ID, Player);
+                }
+            }
+
         }
     }
 }

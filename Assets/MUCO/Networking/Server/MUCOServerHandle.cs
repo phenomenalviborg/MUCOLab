@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PhenomenalViborg.MUCO.Networking
 {
@@ -17,14 +18,16 @@ namespace PhenomenalViborg.MUCO.Networking
                 MUCOServer.DebugLog($"Player \"{clientUsername}\"(ID: {fromClient}) has assumed the wrong client ID ({clientID})!");
             }
 
-            // TODO: Send player into game
+            // Send clientinto game
+            MUCOServer.Clients[fromClient].SendIntoGame();
         }
 
-        public static void UDPTestReceived(int fromClient, MUCOPacket packet)
+        public static void PlayerMovement(int fromClient, MUCOPacket packet)
         {
-            string msg = packet.ReadString();
+            Vector3 position = packet.ReadVector3();
+            Quaternion rotation = packet.ReadQuaternion();
 
-            MUCOServer.DebugLog($"Received packet via UDP. Contains message: {msg}");
+            MUCOServerSend.PlayerMovement(fromClient, position, rotation);
         }
     }
 }

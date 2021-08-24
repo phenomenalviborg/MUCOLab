@@ -265,10 +265,19 @@ namespace PhenomenalViborg.MUCO.Networking
             m_PacketHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)ServerPackets.welcome, MUCOClientHandle.Welcome },
-                { (int)ServerPackets.udpTest, MUCOClientHandle.UDPTest }
+                { (int)ServerPackets.spawnPlayer, MUCOClientHandle.SpawnPlayer },
+                { (int)ServerPackets.playerMovement, MUCOClientHandle.PlayerMovement }
 
             };
             Debug.Log("[CLIENT] Initialized packets.");
+        }
+
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(10, 10, 50, 50), "Connect to server."))
+            {
+                ConnectToServer();
+            }
         }
     }
 }
