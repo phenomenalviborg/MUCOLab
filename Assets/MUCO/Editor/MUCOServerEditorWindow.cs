@@ -17,12 +17,15 @@ using Sirenix.Utilities;
 
 namespace PhenomenalViborg.MUCO
 {
-    [ExecuteAlways]
     public class MUCOServerEditorWindow : OdinEditorWindow
     {
         private MUCOEditorConsole m_Console = new MUCOEditorConsole();
 
-        private float m_NextServerUpdateTime = 0.0f;
+        [Header("Server Settings")]
+        [SerializeField] private bool m_UseFixedDeltaTime = true;
+        [SerializeField] [DisableIf("@m_UseFixedDeltaTime")] private int m_TicksPerSecond = 32;
+
+        private float m_NextServerUpdateTime = 0;
 
         [MenuItem("MUCO/Dedicated Server")]
         private static void OpenWindow()
@@ -35,7 +38,14 @@ namespace PhenomenalViborg.MUCO
         [OnInspectorGUI]
         private void Draw()
         {
+            // TODO: This prop. should be set somewhere else
+            m_TicksPerSecond = m_UseFixedDeltaTime ? (int)(Time.fixedDeltaTime * 1000) : m_TicksPerSecond;
+
             // Start/Stop server buttons
+            GUILayout.Space(16);
+
+            GUILayout.Label("Server Controls");
+            MUCOEditorUtils.DrawDividerLine();
             GUILayout.BeginHorizontal();
             GUI.enabled = !Networking.MUCOServer.IsRunning();
             if (GUILayout.Button("Start Server"))
@@ -54,23 +64,26 @@ namespace PhenomenalViborg.MUCO
             }
             GUI.enabled = true;
             GUILayout.EndHorizontal();
+            GUILayout.Space(16);
 
             // Server info
             GUILayout.Label("Server Info");
+            MUCOEditorUtils.DrawDividerLine();
+            GUIStyle infoGuiStyle = new GUIStyle();
+            infoGuiStyle.normal.textColor = Color.gray;
+            GUILayout.Label($"IsRunning: {Networking.MUCOServer.IsRunning()}", infoGuiStyle);
+            GUILayout.Space(16);
 
             GUILayout.FlexibleSpace();
-
             m_Console.Draw();
         }
 
-        void Update()
+        private void Update()
         {
-            Debug.Log($"{Time.time} - {m_NextServerUpdateTime}");
-            if (Time.time > m_NextServerUpdateTime)
+            if (Time.realtimeSinceStartup > m_NextServerUpdateTime)
             {
-                m_NextServerUpdateTime = Time.time + Time.fixedDeltaTime;
+                m_NextServerUpdateTime = Time.realtimeSinceStartup + ((float)m_TicksPerSecond / 1000.0f);
 
-                Debug.Log("tick");
                 Networking.MUCOThreadManager.UpdateMain();
             }
         }
