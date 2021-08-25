@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
+//TODO: Convert to singleton.
+
 namespace PhenomenalViborg.MUCO.Networking
 {
     public class MUCOServer
@@ -30,7 +32,9 @@ namespace PhenomenalViborg.MUCO.Networking
         public delegate void PacketHandler(int fromClient, MUCOPacket packet);
         public static Dictionary<int, PacketHandler> s_PacketHandlers = new Dictionary<int, PacketHandler>();
 
-        public static void StartServer(int maxPlayers, int port)
+        private static bool s_IsRunning = false;
+
+        public static void Start(int maxPlayers, int port)
         {
             MaxPlayers = maxPlayers;
             Port = port;
@@ -47,19 +51,27 @@ namespace PhenomenalViborg.MUCO.Networking
             m_UDPListener.BeginReceive(UDPReceiveCallback, null);
 
             DebugLog($"Server started on {Port}.");
+
+            s_IsRunning = true;
         }
 
-        public static void StopServer()
+        public static void Stop()
         {
             // TODO: Disconnect all clients
+
+            DebugLog("Stopping server...");
 
             m_TcpListener.Stop();
             m_UDPListener.Close();
 
-            foreach (Delegate listener in ServerLog.GetInvocationList())
-            {
-                ServerLog -= (ServerLogEventHandler)listener;
-            }
+            Clients.Clear();
+
+            s_IsRunning = false;
+        }
+
+        public static bool IsRunning()
+        {
+            return s_IsRunning;
         }
 
         private static void TCPConnectCallback(IAsyncResult asyncResult)
