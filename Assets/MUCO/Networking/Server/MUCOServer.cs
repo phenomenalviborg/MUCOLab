@@ -23,7 +23,6 @@ namespace PhenomenalViborg.MUCO.Networking
         public static void DebugLog(string message)
         {
             Debug.Log(message);
-            ServerLog(message);
         }
 
         public delegate void PacketHandler(int fromClient, MUCOPacket packet);
@@ -48,8 +47,6 @@ namespace PhenomenalViborg.MUCO.Networking
             m_UDPListener.BeginReceive(UDPReceiveCallback, null);
 
             DebugLog($"Server started on {Port}.");
-
-            s_IsRunning = true;
         }
 
         public static void Stop()
@@ -60,8 +57,6 @@ namespace PhenomenalViborg.MUCO.Networking
 
             m_TcpListener.Stop();
             m_UDPListener.Close();
-
-            Clients.Clear();
 
             s_IsRunning = false;
         }

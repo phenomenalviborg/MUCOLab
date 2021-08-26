@@ -119,7 +119,7 @@ namespace PhenomenalViborg.MUCO.Networking
                 }
                 catch (Exception exception)
                 {
-                    Debug.LogError($"Error recieving TCP data: {exception}");
+                    Debug.Log($"Error recieving TCP data: {exception}");
                     Disconnect();
                 }
             }
