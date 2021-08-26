@@ -38,6 +38,8 @@ namespace PhenomenalViborg.MUCO.Networking
 
             public void Connect(TcpClient socket)
             {
+                MUCOServer.DebugLog("Registering new client on server.");
+
                 Socket = socket;
                 Socket.ReceiveBufferSize = DataBufferSize;
                 Socket.SendBufferSize = DataBufferSize;

@@ -17,15 +17,18 @@ using Sirenix.Utilities;
 
 namespace PhenomenalViborg.MUCO
 {
+    [ExecuteAlways]
     public class MUCOServerEditorWindow : OdinEditorWindow
     {
         private MUCOEditorConsole m_Console = new MUCOEditorConsole();
 
         [Header("Server Settings")]
-        [SerializeField] private bool m_UseFixedDeltaTime = true;
-        [SerializeField] [DisableIf("@m_UseFixedDeltaTime")] private int m_TicksPerSecond = 32;
+        [SerializeField] private uint m_Port = 26950;
+        [SerializeField] private uint m_MaxPlayers = 32;
+        [SerializeField] private int m_TicksPerSecond = 32;
 
         private float m_NextServerUpdateTime = 0;
+        private int m_TickCounter = 0;
 
         [MenuItem("MUCO/Dedicated Server")]
         private static void OpenWindow()
@@ -38,9 +41,6 @@ namespace PhenomenalViborg.MUCO
         [OnInspectorGUI]
         private void Draw()
         {
-            // TODO: This prop. should be set somewhere else
-            m_TicksPerSecond = m_UseFixedDeltaTime ? (int)(Time.fixedDeltaTime * 1000) : m_TicksPerSecond;
-
             // Start/Stop server buttons
             GUILayout.Space(16);
 
@@ -52,13 +52,19 @@ namespace PhenomenalViborg.MUCO
             {
                 Networking.MUCOServer.ServerLog += m_Console.WriteLine;
 
-                Networking.MUCOServer.Start(32, 26950);
+                m_NextServerUpdateTime = 0;
+                m_TickCounter = 0;
+
+                Networking.MUCOServer.Start((int)m_MaxPlayers, (int)m_Port);
             }
 
             GUI.enabled = Networking.MUCOServer.IsRunning();
             if (GUILayout.Button("Stop Server"))
             {
                 Networking.MUCOServer.Stop();
+
+                m_NextServerUpdateTime = 0;
+                m_TickCounter = 0;
 
                 Networking.MUCOServer.ServerLog -= m_Console.WriteLine;
             }
@@ -71,7 +77,12 @@ namespace PhenomenalViborg.MUCO
             MUCOEditorUtils.DrawDividerLine();
             GUIStyle infoGuiStyle = new GUIStyle();
             infoGuiStyle.normal.textColor = Color.gray;
-            GUILayout.Label($"IsRunning: {Networking.MUCOServer.IsRunning()}", infoGuiStyle);
+            GUILayout.Label($"Is running: {Networking.MUCOServer.IsRunning()}", infoGuiStyle);
+            GUILayout.Label($"Time since editor startup: {Time.realtimeSinceStartup}", infoGuiStyle);
+            GUILayout.Label($"Next server update time: {m_NextServerUpdateTime}", infoGuiStyle);
+            GUILayout.Label($"Ticks count since last server start: {m_TickCounter}", infoGuiStyle);
+
+
             GUILayout.Space(16);
 
             GUILayout.FlexibleSpace();
@@ -80,11 +91,16 @@ namespace PhenomenalViborg.MUCO
 
         private void Update()
         {
-            if (Time.realtimeSinceStartup > m_NextServerUpdateTime)
+            if (Networking.MUCOServer.IsRunning())
             {
-                m_NextServerUpdateTime = Time.realtimeSinceStartup + ((float)m_TicksPerSecond / 1000.0f);
+                if (Time.realtimeSinceStartup > m_NextServerUpdateTime)
+                {
+                    m_NextServerUpdateTime = Time.realtimeSinceStartup + ((float)m_TicksPerSecond / 1000.0f);
 
-                Networking.MUCOThreadManager.UpdateMain();
+                    m_TickCounter++;
+
+                    Networking.MUCOThreadManager.UpdateMain();
+                }
             }
         }
 

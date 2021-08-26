@@ -310,11 +310,11 @@ namespace PhenomenalViborg.MUCO.Networking
         {
             if (m_IsConnected)
             {
+                Debug.Log("Disconnecting from server...");
+
                 m_IsConnected = false;
                 TCP.Socket.Close();
                 UDP.Socket.Close();
-
-                Debug.Log("Disconnected from server.");
             }
         }
     }

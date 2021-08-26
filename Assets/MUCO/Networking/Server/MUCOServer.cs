@@ -23,10 +23,7 @@ namespace PhenomenalViborg.MUCO.Networking
         public static void DebugLog(string message)
         {
             Debug.Log(message);
-            if (ServerLog != null)
-            {
-                ServerLog(message);
-            }
+            ServerLog(message);
         }
 
         public delegate void PacketHandler(int fromClient, MUCOPacket packet);
@@ -94,7 +91,7 @@ namespace PhenomenalViborg.MUCO.Networking
         }
 
         private static void UDPReceiveCallback(IAsyncResult asyncResult)
-        {
+        { 
             try
             {
                 IPEndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
