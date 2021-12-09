@@ -7,6 +7,12 @@
       "dependencies": {},
       "hash": "e65d81c037d1c7c1394f15cacba3e86545fb8abc"
     },
+    "com.phenomenalviborg.mucosdk": {
+      "version": "file:com.phenomenalviborg.mucosdk",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,
