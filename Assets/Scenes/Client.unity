@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ServerAddress: 127.0.0.1
-  m_ServerPort: 1005
+  m_ServerPort: 1010
   m_LogLevel: 0
   m_UserPrefab: {fileID: 3001315710288656772, guid: 1181eb45e34f36a4c81b368e6d9f1e3c, type: 3}
 --- !u!114 &430774624
