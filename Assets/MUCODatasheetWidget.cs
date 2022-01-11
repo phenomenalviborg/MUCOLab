@@ -48,6 +48,18 @@ namespace PhenomenalViborg.MUCOSDK
                         userDataText += $"    • Packets Sent(to): {clientStatistics.PacketsSent}<br>";
                         userDataText += $"    • Packets Received(from): {clientStatistics.PacketsReceived}<br>";
                     }
+
+                    if (MUCOServerNetworkManager.Instance.ClientDeviceInfo.ContainsKey(clientInfo.UniqueIdentifier))
+                    {
+                        MUCODeviceInfo deviceInfo= MUCOServerNetworkManager.Instance.ClientDeviceInfo[clientInfo.UniqueIdentifier];
+
+                        userDataText += $"    - <b>Device Info</b><br>";
+                        userDataText += $"       • Battery Level: {deviceInfo.BatteryLevel}%<br>";
+                        userDataText += $"       • Battery Status: {deviceInfo.BatteryStatus}<br>";
+                        userDataText += $"       • Device Model: {deviceInfo.DeviceModel}<br>";
+                        userDataText += $"       • Device Unique Identifier: {deviceInfo.DeviceUniqueIdentifier}<br>";
+                        userDataText += $"       • Operating System: {deviceInfo.OperatingSystem}<br>";
+                    }
                 }
             }
 
