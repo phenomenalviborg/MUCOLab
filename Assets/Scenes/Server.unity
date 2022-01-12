@@ -593,7 +593,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ServerPort: 1010
   m_LogLevel: 0
-  m_UserPrefab: {fileID: 3001315710288656772, guid: 1181eb45e34f36a4c81b368e6d9f1e3c, type: 3}
+  m_RemoteUserPrefab: {fileID: 3001315710288656772, guid: 1181eb45e34f36a4c81b368e6d9f1e3c, type: 3}
 --- !u!114 &430774624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1077,7 +1077,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 689739857}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.18401061
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
