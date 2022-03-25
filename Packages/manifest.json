@@ -1,8 +1,10 @@
 {
   "dependencies": {
-    "com.antilatency.sdk": "https://github.com/AntilatencySDK/Release_3.2.0.git#subset-6764457302de38470de71d8c786a91ba4cf69472",
+    "com.phenomenalviborg.antilatencysdk": "1.0.0",
+    "com.phenomenalviborg.muconet": "1.0.0",
+    "com.phenomenalviborg.mucosdk": "1.0.0",
     "com.unity.2d.sprite": "1.0.0",
-    "com.unity.ide.visualstudio": "2.0.12",
+    "com.unity.ide.visualstudio": "2.0.14",
     "com.unity.ide.vscode": "1.2.4",
     "com.unity.test-framework": "1.1.29",
     "com.unity.textmeshpro": "3.0.6",

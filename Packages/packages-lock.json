@@ -1,17 +1,24 @@
 {
   "dependencies": {
-    "com.antilatency.sdk": {
-      "version": "https://github.com/AntilatencySDK/Release_3.2.0.git#subset-6764457302de38470de71d8c786a91ba4cf69472",
+    "com.phenomenalviborg.antilatencysdk": {
+      "version": "file:com.phenomenalviborg.antilatencysdk",
       "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "e65d81c037d1c7c1394f15cacba3e86545fb8abc"
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.phenomenalviborg.muconet": {
+      "version": "file:com.phenomenalviborg.muconet",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.phenomenalviborg.mucosdk": {
       "version": "file:com.phenomenalviborg.mucosdk",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {}
+      "dependencies": {
+        "com.phenomenalviborg.muconet": "1.0.0"
+      }
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -27,7 +34,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.12",
+      "version": "2.0.14",
       "depth": 0,
       "source": "registry",
       "dependencies": {

@@ -9,5 +9,5 @@ EditorBuildSettings:
     path: Assets/MUCO/Scenes/Client.unity
     guid: 2ed3cce2e2f7e7945bf37f900de2102f
   m_configObjects:
-    Unity.XR.Oculus.Settings: {fileID: 0}
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: c7c4f37ee8b310546aae1854f0388a82, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 31c436d12bcb93c4db1b9dc37164acce, type: 2}
