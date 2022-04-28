@@ -17,8 +17,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.phenomenalviborg.muconet": "1.0.0",
-        "com.phenomenalviborg.antilatencysdk": "1.0.0"
+        "com.phenomenalviborg.muconet": "1.0.0"
       }
     },
     "com.unity.2d.sprite": {
@@ -87,7 +86,7 @@
       }
     },
     "com.unity.xr.legacyinputhelpers": {
-      "version": "2.1.8",
+      "version": "2.1.7",
       "depth": 1,
       "source": "registry",
       "dependencies": {
