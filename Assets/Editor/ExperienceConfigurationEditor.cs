@@ -46,7 +46,7 @@ namespace PhenomenalViborg.MUCOSDK
             m_ExperienceConfiguration.Name = EditorGUILayout.TextField("Name", m_ExperienceConfiguration.Name);
             m_ExperienceConfiguration.Description = EditorGUILayout.TextField("Description", m_ExperienceConfiguration.Description);
 
-            m_ExperienceConfiguration.ScenePath = EditorGUILayout.TextField("Scene Path", m_ExperienceConfiguration.ScenePath);
+            m_ExperienceConfiguration.ScenePath = EditorGUILayout.TextField("Scene Path", m_ExperienceConfiguration.ScenePath); // TODO: Make this file reference, not string
             bool buildSettingsContainsScenePath = false;
             foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes) { if (scene.path == m_ExperienceConfiguration.ScenePath) buildSettingsContainsScenePath = true; }
             if (!buildSettingsContainsScenePath) { errorMessages.Add(new Tuple<string, MessageType>($"Failed to find '{m_ExperienceConfiguration.ScenePath}' in build settings! Please verify that your scene path is included in the 'File->Build Setting->Scenes In Build' list.", MessageType.Error)); }
