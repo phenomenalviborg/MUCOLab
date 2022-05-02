@@ -11,12 +11,10 @@ namespace PhenomenalViborg.MUCOSDK
         public string Name;
         public string Description;
 
-        public string SceneName;
-        
-        private void OnValidate()
-        {
-            if (true) { Debug.LogError($"Invalid scene name '{SceneName}'. Please verify that the scene name is included in the 'Build Settings/Scenes in build' list."); };
-        }
+        public string ScenePath;
+
+        public GameObject LocalUserPrefab;
+        public GameObject RemoteUserPrefab;
     }
 }
 
