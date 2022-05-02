@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using UnityEngine.SceneManagement;
 
 namespace PhenomenalViborg.MUCOSDK
@@ -11,7 +12,7 @@ namespace PhenomenalViborg.MUCOSDK
         public string Name;
         public string Description;
 
-        public string ScenePath;
+        public SceneAsset Scene;
 
         public GameObject LocalUserPrefab;
         public GameObject RemoteUserPrefab;

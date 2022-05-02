@@ -24,9 +24,8 @@ namespace PhenomenalViborg.MUCOSDK
             rect.height = i_height;
 
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 0.5f));
-
-
         }
+
         public override void OnInspectorGUI()
         {
             GUIStyle headerStyle = new GUIStyle();
@@ -46,10 +45,11 @@ namespace PhenomenalViborg.MUCOSDK
             m_ExperienceConfiguration.Name = EditorGUILayout.TextField("Name", m_ExperienceConfiguration.Name);
             m_ExperienceConfiguration.Description = EditorGUILayout.TextField("Description", m_ExperienceConfiguration.Description);
 
-            m_ExperienceConfiguration.ScenePath = EditorGUILayout.TextField("Scene Path", m_ExperienceConfiguration.ScenePath); // TODO: Make this file reference, not string
-            bool buildSettingsContainsScenePath = false;
-            foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes) { if (scene.path == m_ExperienceConfiguration.ScenePath) buildSettingsContainsScenePath = true; }
-            if (!buildSettingsContainsScenePath) { errorMessages.Add(new Tuple<string, MessageType>($"Failed to find '{m_ExperienceConfiguration.ScenePath}' in build settings! Please verify that your scene path is included in the 'File->Build Setting->Scenes In Build' list.", MessageType.Error)); }
+            m_ExperienceConfiguration.Scene = EditorGUILayout.ObjectField("Scene", m_ExperienceConfiguration.Scene, typeof(SceneAsset), false) as SceneAsset;
+            //m_ExperienceConfiguration.ScenePath = EditorGUILayout.TextField("Scene Path", m_ExperienceConfiguration.ScenePath); // TODO: Make this file reference, not string
+            //bool buildSettingsContainsScenePath = false;
+            //foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes) { if (scene.path == m_ExperienceConfiguration.ScenePath) buildSettingsContainsScenePath = true; }
+            //if (!buildSettingsContainsScenePath) { errorMessages.Add(new Tuple<string, MessageType>($"Failed to find '{m_ExperienceConfiguration.ScenePath}' in build settings! Please verify that your scene path is included in the 'File->Build Setting->Scenes In Build' list.", MessageType.Error)); }
 
             m_ExperienceConfiguration.LocalUserPrefab = EditorGUILayout.ObjectField("Local User Prefab", m_ExperienceConfiguration.LocalUserPrefab, typeof(GameObject), false) as GameObject;
             if (m_ExperienceConfiguration.LocalUserPrefab && !m_ExperienceConfiguration.LocalUserPrefab.GetComponent<User>()) { errorMessages.Add(new Tuple<string, MessageType>("Failed to find a 'User' component on 'LocalUserPrefab'! Please verify that your user prefabs has a 'User' component attached prefab root entity.", MessageType.Error)); }
