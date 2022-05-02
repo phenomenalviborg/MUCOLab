@@ -49,6 +49,11 @@ namespace PhenomenalViborg.MUCOSDK
             if (!m_ApplicationConfiguration.MenuScene) { errorMessages.Add(new Tuple<string, MessageType>($"Missing scene! Please specify a menu scene for the experience.", MessageType.Error)); }
             else if (SceneUtility.GetBuildIndexByScenePath(AssetDatabase.GetAssetPath(m_ApplicationConfiguration.MenuScene)) < 0) { errorMessages.Add(new Tuple<string, MessageType>($"Failed to find specified menu scene in build settings! Please verify that your scene path is included in the 'File->Build Setting->Scenes In Build' list.", MessageType.Error)); }
 
+            foreach (ExperienceConfiguration experienceConfiguration in m_ApplicationConfiguration.ExperienceConfigurations)
+            {
+                GUILayout.Label(experienceConfiguration.Name);
+            }
+
             // Debug messages
             if (errorMessages.Count > 0)
             {

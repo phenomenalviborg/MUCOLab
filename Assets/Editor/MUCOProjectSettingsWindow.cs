@@ -33,6 +33,8 @@ namespace PhenomenalViborg.MUCOSDK
         string experienceName = "NewExperience";
         EExperienceTemplate selectedExperienceTemplate = EExperienceTemplate.Blank;
 
+        ApplicationConfiguration m_ApplicationConfiguration;
+
         private void OnGUI()
         {   
             GUIStyle headerStyle = new GUIStyle();
@@ -68,7 +70,13 @@ namespace PhenomenalViborg.MUCOSDK
                 newBuildScenes[newBuildScenes.Length - 2] = new EditorBuildSettingsScene("Assets/ExperienceFrameworkRnD/S_Entry.unity", true); // TODO: Check in the scene is pressent before adding
                 newBuildScenes[newBuildScenes.Length - 1] = new EditorBuildSettingsScene("Assets/ExperienceFrameworkRnD/S_Menu.unity", true); // TODO: Check in the scene is pressent before adding
                 EditorBuildSettings.scenes = newBuildScenes;
+
+                m_ApplicationConfiguration = applicationConfiguration;
             }
+             
+            EditorGUILayout.Space(8);
+            m_ApplicationConfiguration = EditorGUILayout.ObjectField("Application Configuration", m_ApplicationConfiguration, typeof(ApplicationConfiguration), false) as ApplicationConfiguration;
+           
             EditorGUILayout.Space(16);
 
             // Project generator
@@ -109,6 +117,19 @@ namespace PhenomenalViborg.MUCOSDK
                     experienceConfiguration.LocalUserPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ExperienceFrameworkRnD/P_LocalUser.prefab"); // TODO: Better solution for path
                     experienceConfiguration.RemoteUserPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ExperienceFrameworkRnD/P_RemoteUser.prefab"); // TODO: Better solution for path
                     AssetDatabase.CreateAsset(experienceConfiguration, relativeExperienceConfigurationPath);
+
+                    if (m_ApplicationConfiguration)
+                    {
+                        var originalExperienceConfigurations =m_ApplicationConfiguration.ExperienceConfigurations;
+                        var newExperienceConfigurations = new ExperienceConfiguration[originalExperienceConfigurations.Length + 1];
+                        System.Array.Copy(originalExperienceConfigurations, newExperienceConfigurations, originalExperienceConfigurations.Length);
+                        newExperienceConfigurations[newExperienceConfigurations.Length - 1] = experienceConfiguration;
+                        m_ApplicationConfiguration.ExperienceConfigurations = newExperienceConfigurations;
+                    }
+                    else
+                    {
+                        Debug.LogError("m_ApplicationConfiguration was undefined!");
+                    }
                 }
                 else
                 {
