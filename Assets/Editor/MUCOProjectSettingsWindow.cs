@@ -55,8 +55,8 @@ namespace PhenomenalViborg.MUCOSDK
                 // TODO: Get scenes in some from some sort of constant MUCOSDK config file.
                 string relativeApplicationConfigurationPath = $"Assets/ApplicationConfiguration.asset";
                 ApplicationConfiguration applicationConfiguration = ScriptableObject.CreateInstance<ApplicationConfiguration>();
-                applicationConfiguration.EntryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity");
-                applicationConfiguration.MenuScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity");
+                applicationConfiguration.EntryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity"); // TODO: Better solution for path
+                applicationConfiguration.MenuScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity"); // TODO: Better solution for path
                 AssetDatabase.CreateAsset(applicationConfiguration, relativeApplicationConfigurationPath);
             }
             EditorGUILayout.Space(16);
@@ -68,6 +68,7 @@ namespace PhenomenalViborg.MUCOSDK
             selectedExperienceTemplate = (EExperienceTemplate)EditorGUILayout.Popup("Project Template", (int)selectedExperienceTemplate, Enum.GetNames(typeof(EExperienceTemplate)));
             if (GUILayout.Button("Generate Project"))
             {
+                string relativeProjectPath = $"Assets/{experienceName}";
                 string absoluteProjectPath = $"{Application.dataPath}/{experienceName}";
                 Debug.Log($"Generating project at: '{absoluteProjectPath}'");
                 if (!Directory.Exists(absoluteProjectPath))
@@ -77,15 +78,26 @@ namespace PhenomenalViborg.MUCOSDK
                     AssetDatabase.Refresh();
 
                     // Create experiece scene, this should most likely be duplicating a template scene? 
-                    string absoluteExperienceScenePath = $"{absoluteProjectPath}/S_{experienceName}.unity";
+                    string relativeExperienceScenePath = $"{relativeProjectPath}/S_{experienceName}.unity";
                     Scene experieceScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene);
-                    EditorSceneManager.SaveScene(experieceScene, absoluteExperienceScenePath);
+                    EditorSceneManager.SaveScene(experieceScene, relativeExperienceScenePath);
                     AssetDatabase.Refresh();
 
+                    // Add scene to build settings
+                    var originalBuildScenes = EditorBuildSettings.scenes;
+                    var newBuildScenes = new EditorBuildSettingsScene[originalBuildScenes.Length + 1];
+                    System.Array.Copy(originalBuildScenes, newBuildScenes, originalBuildScenes.Length);
+                    newBuildScenes[newBuildScenes.Length - 1] = new EditorBuildSettingsScene(relativeExperienceScenePath, true); ;
+                    EditorBuildSettings.scenes = newBuildScenes;
+
                     // Create experience configuration
-                    string relativeExperienceConfigurationPath = $"Assets/{experienceName}/{experienceName}Configuration.asset";
+                    string relativeExperienceConfigurationPath = $"{relativeProjectPath}/{experienceName}Configuration.asset";
                     ExperienceConfiguration experienceConfiguration = ScriptableObject.CreateInstance<ExperienceConfiguration>();
-                    experienceConfiguration.name = experienceName;
+                    experienceConfiguration.Name = experienceName;
+                    experienceConfiguration.Scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(relativeExperienceScenePath);
+                    // Assign player prefabs, TODO: This should also be taken from some sort of template config file native to MUCOSDK.
+                    experienceConfiguration.LocalUserPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ExperienceFrameworkRnD/P_LocalUser.prefab"); // TODO: Better solution for path
+                    experienceConfiguration.RemoteUserPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ExperienceFrameworkRnD/P_RemoteUser.prefab"); // TODO: Better solution for path
                     AssetDatabase.CreateAsset(experienceConfiguration, relativeExperienceConfigurationPath);
                 }
                 else
