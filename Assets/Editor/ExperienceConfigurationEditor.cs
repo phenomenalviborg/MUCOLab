@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEditor;
 
 namespace PhenomenalViborg.MUCOSDK
@@ -46,10 +47,8 @@ namespace PhenomenalViborg.MUCOSDK
             m_ExperienceConfiguration.Description = EditorGUILayout.TextField("Description", m_ExperienceConfiguration.Description);
 
             m_ExperienceConfiguration.Scene = EditorGUILayout.ObjectField("Scene", m_ExperienceConfiguration.Scene, typeof(SceneAsset), false) as SceneAsset;
-            //m_ExperienceConfiguration.ScenePath = EditorGUILayout.TextField("Scene Path", m_ExperienceConfiguration.ScenePath); // TODO: Make this file reference, not string
-            //bool buildSettingsContainsScenePath = false;
-            //foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes) { if (scene.path == m_ExperienceConfiguration.ScenePath) buildSettingsContainsScenePath = true; }
-            //if (!buildSettingsContainsScenePath) { errorMessages.Add(new Tuple<string, MessageType>($"Failed to find '{m_ExperienceConfiguration.ScenePath}' in build settings! Please verify that your scene path is included in the 'File->Build Setting->Scenes In Build' list.", MessageType.Error)); }
+            if (!m_ExperienceConfiguration.Scene) { errorMessages.Add(new Tuple<string, MessageType>($"Missing scene! Please specify a scene for the experience.", MessageType.Error)); }
+            else if (SceneUtility.GetBuildIndexByScenePath(AssetDatabase.GetAssetPath(m_ExperienceConfiguration.Scene)) < 0) { errorMessages.Add(new Tuple<string, MessageType>($"Failed to find specified scene in build settings! Please verify that your scene path is included in the 'File->Build Setting->Scenes In Build' list.", MessageType.Error)); }
 
             m_ExperienceConfiguration.LocalUserPrefab = EditorGUILayout.ObjectField("Local User Prefab", m_ExperienceConfiguration.LocalUserPrefab, typeof(GameObject), false) as GameObject;
             if (m_ExperienceConfiguration.LocalUserPrefab && !m_ExperienceConfiguration.LocalUserPrefab.GetComponent<User>()) { errorMessages.Add(new Tuple<string, MessageType>("Failed to find a 'User' component on 'LocalUserPrefab'! Please verify that your user prefabs has a 'User' component attached prefab root entity.", MessageType.Error)); }
@@ -66,6 +65,8 @@ namespace PhenomenalViborg.MUCOSDK
                     EditorGUILayout.HelpBox(errorMessage.Item1, errorMessage.Item2);
                 }
             }
+
+            Repaint(); // Fix for bug where 'scene in build' error won't disappear until asset is refocused.
         }
     }
 }
