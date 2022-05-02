@@ -51,13 +51,23 @@ namespace PhenomenalViborg.MUCOSDK
             setupButtonStyle.richText = true;
             if (GUILayout.Button("<b>Magic setup button (<i>pssst... artist, click me!</i>)</b>", setupButtonStyle, GUILayout.Height(100)))
             {
+                // TODO: Check if an ApplicationConfiguration file is ready; a refernce will also be need to add newly created experience configuration to.
+
                 // Create application configuration
                 // TODO: Get scenes in some from some sort of constant MUCOSDK config file.
                 string relativeApplicationConfigurationPath = $"Assets/ApplicationConfiguration.asset";
                 ApplicationConfiguration applicationConfiguration = ScriptableObject.CreateInstance<ApplicationConfiguration>();
                 applicationConfiguration.EntryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity"); // TODO: Better solution for path
-                applicationConfiguration.MenuScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity"); // TODO: Better solution for path
+                applicationConfiguration.MenuScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Menu.unity"); // TODO: Better solution for path
                 AssetDatabase.CreateAsset(applicationConfiguration, relativeApplicationConfigurationPath);
+
+                // Add scenes to build settings
+                var originalBuildScenes = EditorBuildSettings.scenes;
+                var newBuildScenes = new EditorBuildSettingsScene[originalBuildScenes.Length + 2];
+                System.Array.Copy(originalBuildScenes, newBuildScenes, originalBuildScenes.Length);
+                newBuildScenes[newBuildScenes.Length - 2] = new EditorBuildSettingsScene("Assets/ExperienceFrameworkRnD/S_Entry.unity", true); // TODO: Check in the scene is pressent before adding
+                newBuildScenes[newBuildScenes.Length - 1] = new EditorBuildSettingsScene("Assets/ExperienceFrameworkRnD/S_Menu.unity", true); // TODO: Check in the scene is pressent before adding
+                EditorBuildSettings.scenes = newBuildScenes;
             }
             EditorGUILayout.Space(16);
 
@@ -87,7 +97,7 @@ namespace PhenomenalViborg.MUCOSDK
                     var originalBuildScenes = EditorBuildSettings.scenes;
                     var newBuildScenes = new EditorBuildSettingsScene[originalBuildScenes.Length + 1];
                     System.Array.Copy(originalBuildScenes, newBuildScenes, originalBuildScenes.Length);
-                    newBuildScenes[newBuildScenes.Length - 1] = new EditorBuildSettingsScene(relativeExperienceScenePath, true); ;
+                    newBuildScenes[newBuildScenes.Length - 1] = new EditorBuildSettingsScene(relativeExperienceScenePath, true); // TODO: Check in the scene is pressent before adding
                     EditorBuildSettings.scenes = newBuildScenes;
 
                     // Create experience configuration
@@ -106,6 +116,6 @@ namespace PhenomenalViborg.MUCOSDK
                     return;
                 }
             }
-        }
+        }   
     }
 }
