@@ -64,37 +64,36 @@ namespace PhenomenalViborg.MUCOSDK
             EditorGUILayout.LabelField("MUCO Project Settings", headerStyle);
             EditorGUILayout.Space(32);
 
+
+            string relativeApplicationConfigurationPath = $"Assets/ApplicationConfiguration.asset";
+            ApplicationConfiguration applicationConfiguration = AssetDatabase.LoadAssetAtPath<ApplicationConfiguration>(relativeApplicationConfigurationPath);
+
             // Setup project settings and other setup
             GuiLine();
             EditorGUILayout.Space(16);
             GUIStyle setupButtonStyle = new GUIStyle(GUI.skin.button);
             setupButtonStyle.richText = true;
+            GUI.enabled = !applicationConfiguration;
             if (GUILayout.Button("<b>Magic setup button (<i>pssst... artist, click me!</i>)</b>", setupButtonStyle, GUILayout.Height(100)))
             {
-                // TODO: Check if an ApplicationConfiguration file is ready; a refernce will also be need to add newly created experience configuration to.
-
                 // Create application configuration
                 // TODO: Get scenes in some from some sort of constant MUCOSDK config file.
-                string relativeApplicationConfigurationPath = $"Assets/ApplicationConfiguration.asset";
-                ApplicationConfiguration applicationConfiguration = ScriptableObject.CreateInstance<ApplicationConfiguration>();
+                applicationConfiguration = ScriptableObject.CreateInstance<ApplicationConfiguration>();
                 applicationConfiguration.EntryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity"); // TODO: Better solution for path
                 applicationConfiguration.MenuScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Menu.unity"); // TODO: Better solution for path
                 AssetDatabase.CreateAsset(applicationConfiguration, relativeApplicationConfigurationPath);
 
                 // Add scenes to build settings
-                var originalBuildScenes = EditorBuildSettings.scenes;
-                var newBuildScenes = new EditorBuildSettingsScene[originalBuildScenes.Length + 2];
-                System.Array.Copy(originalBuildScenes, newBuildScenes, originalBuildScenes.Length);
-                newBuildScenes[newBuildScenes.Length - 2] = new EditorBuildSettingsScene("Assets/ExperienceFrameworkRnD/S_Entry.unity", true); // TODO: Check in the scene is pressent before adding
-                newBuildScenes[newBuildScenes.Length - 1] = new EditorBuildSettingsScene("Assets/ExperienceFrameworkRnD/S_Menu.unity", true); // TODO: Check in the scene is pressent before adding
-                EditorBuildSettings.scenes = newBuildScenes;
+                MUCOEditorUtilities.AddSceneToBuild(applicationConfiguration.EntryScene);
+                MUCOEditorUtilities.AddSceneToBuild(applicationConfiguration.MenuScene);
 
                 m_ApplicationConfiguration = applicationConfiguration;
             }
-             
             EditorGUILayout.Space(8);
+            GUI.enabled = false;
             m_ApplicationConfiguration = EditorGUILayout.ObjectField("Application Configuration", m_ApplicationConfiguration, typeof(ApplicationConfiguration), false) as ApplicationConfiguration;
-           
+            GUI.enabled = true;
+
             EditorGUILayout.Space(16);
 
             // Project generator
