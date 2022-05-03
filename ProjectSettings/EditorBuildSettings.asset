@@ -6,20 +6,20 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/MUCO/Scenes/Client.unity
-    guid: 2ed3cce2e2f7e7945bf37f900de2102f
-  - enabled: 1
     path: Assets/ExperienceFrameworkRnD/S_Entry.unity
     guid: 56e02c62280735f498837d0300d094b1
   - enabled: 1
     path: Assets/ExperienceFrameworkRnD/S_Menu.unity
     guid: a86ed2feecd8a41498e8dff9b45195b5
-  - enabled: 1
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
     path: Assets/NewExperience/S_NewExperience.unity
-    guid: 52cfbd15ec2df064992235c6af5ae637
-  - enabled: 1
-    path: Assets/NewExperience2/S_NewExperience2.unity
-    guid: b9b51f41b95b4fb4a90436fcf833908a
+    guid: 2f51edbed3ace1d45b91348463179e4f
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: c7c4f37ee8b310546aae1854f0388a82, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 31c436d12bcb93c4db1b9dc37164acce, type: 2}

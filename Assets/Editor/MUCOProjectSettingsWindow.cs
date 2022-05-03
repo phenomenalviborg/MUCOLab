@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -30,8 +32,24 @@ namespace PhenomenalViborg.MUCOSDK
             Gallery
         }
 
+        public static List<T> FindAssetsByType<T>() where T : UnityEngine.Object
+        {
+            List<T> assets = new List<T>();
+            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                if (asset != null)
+                {
+                    assets.Add(asset);
+                }
+            }
+            return assets;
+        }
+
         string experienceName = "NewExperience";
-        EExperienceTemplate selectedExperienceTemplate = EExperienceTemplate.Blank;
+        int m_SelectedExperienceTemplateIndex = 0;
 
         ApplicationConfiguration m_ApplicationConfiguration;
 
@@ -82,49 +100,46 @@ namespace PhenomenalViborg.MUCOSDK
             // Project generator
             GuiLine();
             EditorGUILayout.Space(16);
+
             experienceName = EditorGUILayout.TextField("Experience Name", experienceName);
-            selectedExperienceTemplate = (EExperienceTemplate)EditorGUILayout.Popup("Project Template", (int)selectedExperienceTemplate, Enum.GetNames(typeof(EExperienceTemplate)));
+
+            List<ExperienceTemplateConfiguration> experienceTemplateConfigurations = FindAssetsByType<ExperienceTemplateConfiguration>();
+            string[] experienceTemplateNames = experienceTemplateConfigurations.Select(x => x.Name).ToArray();
+            m_SelectedExperienceTemplateIndex = EditorGUILayout.Popup("Project Template", m_SelectedExperienceTemplateIndex, experienceTemplateNames);
+         
             if (GUILayout.Button("Generate Project"))
             {
+                ExperienceTemplateConfiguration experienceTemplateConfiguration = experienceTemplateConfigurations[m_SelectedExperienceTemplateIndex];
+
                 string relativeProjectPath = $"Assets/{experienceName}";
                 string absoluteProjectPath = $"{Application.dataPath}/{experienceName}";
                 Debug.Log($"Generating project at: '{absoluteProjectPath}'");
+
                 if (!Directory.Exists(absoluteProjectPath))
                 {
                     // Create directory
                     Directory.CreateDirectory(absoluteProjectPath);
                     AssetDatabase.Refresh();
 
-                    // Create experiece scene, this should most likely be duplicating a template scene? 
+                    // Create experiece scene, this should most likely be duplicating a template scene?
                     string relativeExperienceScenePath = $"{relativeProjectPath}/S_{experienceName}.unity";
-                    Scene experieceScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene);
-                    EditorSceneManager.SaveScene(experieceScene, relativeExperienceScenePath);
-                    AssetDatabase.Refresh();
-
-                    // Add scene to build settings
-                    var originalBuildScenes = EditorBuildSettings.scenes;
-                    var newBuildScenes = new EditorBuildSettingsScene[originalBuildScenes.Length + 1];
-                    System.Array.Copy(originalBuildScenes, newBuildScenes, originalBuildScenes.Length);
-                    newBuildScenes[newBuildScenes.Length - 1] = new EditorBuildSettingsScene(relativeExperienceScenePath, true); // TODO: Check in the scene is pressent before adding
-                    EditorBuildSettings.scenes = newBuildScenes;
+                    AssetDatabase.CopyAsset(AssetDatabase.GetAssetPath(experienceTemplateConfiguration.Scene), relativeExperienceScenePath);
+                    SceneAsset experienceScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(relativeExperienceScenePath);
+                    MUCOEditorUtilities.AddSceneToBuild(experienceScene);
 
                     // Create experience configuration
                     string relativeExperienceConfigurationPath = $"{relativeProjectPath}/{experienceName}Configuration.asset";
                     ExperienceConfiguration experienceConfiguration = ScriptableObject.CreateInstance<ExperienceConfiguration>();
                     experienceConfiguration.Name = experienceName;
-                    experienceConfiguration.Scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(relativeExperienceScenePath);
-                    // Assign player prefabs, TODO: This should also be taken from some sort of template config file native to MUCOSDK.
-                    experienceConfiguration.LocalUserPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ExperienceFrameworkRnD/P_LocalUser.prefab"); // TODO: Better solution for path
-                    experienceConfiguration.RemoteUserPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ExperienceFrameworkRnD/P_RemoteUser.prefab"); // TODO: Better solution for path
+                    experienceConfiguration.Scene = experienceScene;
+                    experienceConfiguration.LocalUserPrefab = experienceTemplateConfiguration.LocalUserPrefab;
+                    experienceConfiguration.RemoteUserPrefab = experienceTemplateConfiguration.RemoteUserPrefab;
                     AssetDatabase.CreateAsset(experienceConfiguration, relativeExperienceConfigurationPath);
 
+                    // Append experience to application configuration
                     if (m_ApplicationConfiguration)
                     {
-                        var originalExperienceConfigurations =m_ApplicationConfiguration.ExperienceConfigurations;
-                        var newExperienceConfigurations = new ExperienceConfiguration[originalExperienceConfigurations.Length + 1];
-                        System.Array.Copy(originalExperienceConfigurations, newExperienceConfigurations, originalExperienceConfigurations.Length);
-                        newExperienceConfigurations[newExperienceConfigurations.Length - 1] = experienceConfiguration;
-                        m_ApplicationConfiguration.ExperienceConfigurations = newExperienceConfigurations;
+                        m_ApplicationConfiguration.ExperienceConfigurations = m_ApplicationConfiguration.ExperienceConfigurations.Append(experienceConfiguration).ToArray();
                     }
                     else
                     {
