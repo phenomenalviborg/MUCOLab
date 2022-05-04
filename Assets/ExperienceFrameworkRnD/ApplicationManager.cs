@@ -2,21 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PhenomenalViborg.MUCOSDK
 {
     public class ApplicationManager : MonoBehaviour
     {
+        [SerializeField] private ApplicationConfiguration m_ApplicationConfiguration;
 
-        [Serializable]
-        public struct PlayerStats
+        private void Awake()
         {
-            public int movementSpeed;
-            public int hitPoints;
-            public bool hasHealthPotion;
+            DontDestroyOnLoad(this.gameObject);
+            
         }
 
-        [SerializeField] private PlayerStats m_PlayerStats;
-        [SerializeField] private GameObject m_UserPrefab;
+        public void LoadMenu()
+        {
+            SceneManager.LoadScene(m_ApplicationConfiguration.MenuScene.name);
+        }
     }
 }

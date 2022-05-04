@@ -1,0 +1,89 @@
+{
+  "main": {
+    "id": "089da9f7d8ba94aa",
+    "type": "split",
+    "children": [
+      {
+        "id": "0eb38b4a301f17c5",
+        "type": "leaf",
+        "state": {
+          "type": "empty",
+          "state": {}
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "52298e21398bdbcc",
+    "type": "split",
+    "children": [
+      {
+        "id": "6006f95d5029d665",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c0b66067e8383979",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "1473022927de601d",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "019eaa04142800bb",
+    "type": "split",
+    "children": [
+      {
+        "id": "42b77607b64d22f3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f7885691896a7639",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "0eb38b4a301f17c5",
+  "lastOpenFiles": [
+    "Solution Proposals/Establishing the initial connection between client and server.md"
+  ]
+}
