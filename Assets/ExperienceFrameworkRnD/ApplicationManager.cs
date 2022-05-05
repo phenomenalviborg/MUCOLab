@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Antilatency;
 
 namespace PhenomenalViborg.MUCOSDK
 {
@@ -13,7 +14,6 @@ namespace PhenomenalViborg.MUCOSDK
         private void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
-            
         }
 
         public void LoadMenu()
