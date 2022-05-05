@@ -7,7 +7,7 @@ using Antilatency;
 
 namespace PhenomenalViborg.MUCOSDK
 {
-    public class ApplicationManager : MonoBehaviour
+    public class ApplicationManager : PhenomenalViborg.MUCOSDK.IManager<ApplicationManager>
     {
         [SerializeField] private ApplicationConfiguration m_ApplicationConfiguration;
 
@@ -19,6 +19,10 @@ namespace PhenomenalViborg.MUCOSDK
         public void LoadMenu()
         {
             SceneManager.LoadScene(m_ApplicationConfiguration.MenuScene.name);
+            
+            string serverAddress = TrackingManager.GetInstance().GetStringPropertyFromAdminNode("ServerAddress");
+            int serverPort = int.Parse(TrackingManager.GetInstance().GetStringPropertyFromAdminNode("ServerPort"));
+            NetworkManager.GetInstance().Connect(serverAddress, serverPort);
         }
     }
 }

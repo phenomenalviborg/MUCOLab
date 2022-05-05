@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PhenomenalViborg.MUCOSDK
 {
-    public class TrackingManager : PhenomenalViborg.MUCOSDK.IManager
+    public class TrackingManager : PhenomenalViborg.MUCOSDK.IManager<TrackingManager>
     {
         [SerializeField] private string m_EnvironmentCode;
 
@@ -41,14 +41,29 @@ namespace PhenomenalViborg.MUCOSDK
 
         private void Start()
         {
-            m_AdminNodeHandle = GetIdleTrackerNodesBySocketTag("Admin")[0];
-            m_UserNodeHandle = GetUsbConnectedIdleIdleTrackerNodesBySocketTag("User")[0];
+            Antilatency.DeviceNetwork.NodeHandle[] compatibleAdminNodes = GetIdleTrackerNodesBySocketTag("Admin");
+            m_AdminNodeHandle = compatibleAdminNodes.Length > 0 ? compatibleAdminNodes[0] : new Antilatency.DeviceNetwork.NodeHandle();
+
+            Antilatency.DeviceNetwork.NodeHandle[] compatibleUserNodes = GetUsbConnectedIdleIdleTrackerNodesBySocketTag("User");
+            m_UserNodeHandle = compatibleUserNodes.Length > 0 ? compatibleUserNodes[0] : new Antilatency.DeviceNetwork.NodeHandle();
 
             Debug.Log($"AdminNodeHandle: {m_AdminNodeHandle}");
             Debug.Log($"UserNodeHandle: {m_UserNodeHandle}");
         }
 
-        protected Antilatency.DeviceNetwork.NodeHandle[] GetUsbConnectedIdleIdleTrackerNodesBySocketTag(string socketTag)
+        public string GetStringPropertyFromAdminNode(string key)
+        {
+            Antilatency.DeviceNetwork.INetwork nativeNetwork = m_DeviceNetwork.NativeNetwork;
+            return nativeNetwork.nodeGetStringProperty(nativeNetwork.nodeGetParent(m_AdminNodeHandle), key);
+        }
+
+        public byte[] GetBinaryPropertyFromAdminNode(string key)
+        {
+            Antilatency.DeviceNetwork.INetwork nativeNetwork = m_DeviceNetwork.NativeNetwork;
+            return nativeNetwork.nodeGetBinaryProperty(nativeNetwork.nodeGetParent(m_AdminNodeHandle), key);
+        }
+
+        private Antilatency.DeviceNetwork.NodeHandle[] GetUsbConnectedIdleIdleTrackerNodesBySocketTag(string socketTag)
         {
             Antilatency.DeviceNetwork.INetwork nativeNetwork = m_DeviceNetwork.NativeNetwork;
             if (nativeNetwork == null)

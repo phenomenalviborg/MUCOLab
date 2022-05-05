@@ -192,6 +192,7 @@ GameObject:
   - component: {fileID: 797030284}
   - component: {fileID: 797030283}
   - component: {fileID: 797030285}
+  - component: {fileID: 797030286}
   m_Layer: 0
   m_Name: ApplicationManager
   m_TagString: Untagged
@@ -220,7 +221,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 797030282}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -239,6 +240,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EnvironmentCode: AntilatencyAltEnvironmentHorizontalGrid~AgAQHLhTiT_cRqA-r45jvZqZmT4AAAAAAAAAAACamRk_AUYICgAADAMAFQMGFwENFAMGDwMCDwICDAEMAgAPCgMEFgEIDAIHBQMEGQAAGAELFQEMGwAMBgADAAIMBAAKBwMLGAECGwIPEgMMEAAEDwMEAgIABwMKEQAPFgMHAAIDFAIJGwIIGQAIBwELCQEFFAMJFAELDgAAAgMHFAEFBQMCCQINDAMIFwAPDgMHAgIFGwAJAgMKDAAJBAACBAIDEgIPBgMIDgAAEQMGCAEEBwELEwINFwENCAELAAAGEQIPGQEDBgIPAgMIEQMCFwEFDAIECgA
+--- !u!114 &797030286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797030282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e4413061ed8034991a6664ee1991e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &902832608
 GameObject:
   m_ObjectHideFlags: 0
