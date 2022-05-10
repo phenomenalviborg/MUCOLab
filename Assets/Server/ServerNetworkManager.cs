@@ -18,9 +18,6 @@ namespace PhenomenalViborg.MUCOSDK
     {
         [HideInInspector] public MUCOServer Server { get; private set; } = null;
 
-        [Header("Networking")]
-        [SerializeField] private int m_ServerPort = 1000;
-
         [Header("Debug")]
         [SerializeField] private MUCOLogMessage.MUCOLogLevel m_LogLevel = MUCOLogMessage.MUCOLogLevel.Info;
 
@@ -29,6 +26,7 @@ namespace PhenomenalViborg.MUCOSDK
         [HideInInspector] public Dictionary<int, DeviceInfo> ClientDeviceInfo = new Dictionary<int, DeviceInfo>();
         [SerializeField] private GameObject m_RemoteUserPrefab = null;
 
+        private bool m_Started = false;
 
         private void Start()
         {
@@ -41,12 +39,31 @@ namespace PhenomenalViborg.MUCOSDK
             Server.RegisterPacketHandler((int)MUCOClientPackets.DeviceInfo, HandleDeviceInfo);
             Server.OnClientConnectedEvent += OnClientConnected;
             Server.OnClientDisconnectedEvent += OnClientDisconnected;
-            Server.Start(m_ServerPort);
+        }
+
+        public void StartServer(int port)
+        {
+            m_Started = true;
+            Server.Start(port);
+        }
+
+        public bool IsStarted()
+        {
+            return m_Started;
+        }
+
+        public void StopServer()
+        {
+            Server.Stop();
+            m_Started = false;
         }
 
         private void OnApplicationQuit()
         {
-            Server.Stop();
+            if (m_Started)
+            {
+                StopServer();
+            }
         }
 
         private void OnClientConnected(MUCOServer.MUCORemoteClient newClientInfo)
@@ -165,27 +182,6 @@ namespace PhenomenalViborg.MUCOSDK
         private static void Log(MUCOLogMessage message)
         {
             Debug.Log(message.ToString());
-        }
-        private void OnGUI()
-        {
-            GUILayout.BeginVertical();
-            GUILayout.Label(string.Format("<b>Server</b>\n" +
-                $"Address: {Server.GetAddress()}\n" +
-                $"Port: {Server.GetPort()}\n" +
-                $"Active Connections: {Server.GetConnectionCount()}\n" +
-                $"Packets Sent: {Server.GetPacketsSendCount()}\n" +
-                $"Packets Received: {Server.GetPacketsReceivedCount()}\n"));
-
-            foreach (MUCOServer.MUCORemoteClient clientInfo in Server.ClientInfo.Values)
-            {
-                GUILayout.Label(string.Format($"<b>Client {clientInfo.UniqueIdentifier}</b>\n" +
-                 $"Address: {clientInfo.GetAddress()}\n" +
-                 $"Port: {clientInfo.GetPort()}\n" +
-                 $"Packets Sent: {Server.ClientStatistics[clientInfo.UniqueIdentifier].PacketsSent}\n" +
-                 $"Packets Received: {Server.ClientStatistics[clientInfo.UniqueIdentifier].PacketsReceived}\n"));
-            }
-
-            GUILayout.EndVertical();
         }
     }
 }
