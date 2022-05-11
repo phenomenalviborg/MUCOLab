@@ -6,7 +6,7 @@ namespace PhenomenalViborg.MUCOSDK
     public class ServerGUI : MonoBehaviour
     {
         private string m_PortString = "4960";
-        private string m_LoadExperienceString = "ExperienceName";
+        private string m_LoadExperienceString = "NewExperience";
 
         private void OnGUI()
         {

@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
@@ -9,7 +12,7 @@ namespace PhenomenalViborg.MUCOSDK
         public SceneAsset EntryScene;
         public SceneAsset MenuScene;
 
-        public ExperienceConfiguration[] ExperienceConfigurations = new ExperienceConfiguration[0];
+        public List<ExperienceConfiguration> ExperienceConfigurations = new List<ExperienceConfiguration>();
     }
 }
 

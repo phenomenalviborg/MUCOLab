@@ -192,9 +192,8 @@ GameObject:
   - component: {fileID: 797030284}
   - component: {fileID: 797030283}
   - component: {fileID: 797030285}
-  - component: {fileID: 797030286}
   - component: {fileID: 797030287}
-  - component: {fileID: 797030288}
+  - component: {fileID: 797030286}
   m_Layer: 0
   m_Name: ApplicationManager
   m_TagString: Untagged
@@ -254,6 +253,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e4413061ed8034991a6664ee1991e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_ServerAddress: 127.0.0.1
+  m_ServerPort: 4960
+  m_LogLevel: 2
+  m_RemoteUserPrefab: {fileID: 8466323033043974117, guid: fc832a1110af38e4d86b490cd8561e8c, type: 3}
+  m_LocalUserPrefab: {fileID: 8466323033043974117, guid: 09d460d44b7978740aae0b104a193922, type: 3}
 --- !u!114 &797030287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,23 +270,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5364826717540ed419436ee4603f7016, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &797030288
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 797030282}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 650896d86d9562647b3295548b4f0a37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ServerAddress: 127.0.0.1
-  m_ServerPort: 4960
-  m_LogLevel: 0
-  m_RemoteUserPrefab: {fileID: 8466323033043974117, guid: fc832a1110af38e4d86b490cd8561e8c, type: 3}
-  m_LocalUserPrefab: {fileID: 8466323033043974117, guid: 09d460d44b7978740aae0b104a193922, type: 3}
 --- !u!1 &902832608
 GameObject:
   m_ObjectHideFlags: 0

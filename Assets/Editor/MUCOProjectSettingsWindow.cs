@@ -66,28 +66,28 @@ namespace PhenomenalViborg.MUCOSDK
 
 
             string relativeApplicationConfigurationPath = $"Assets/ApplicationConfiguration.asset";
-            ApplicationConfiguration applicationConfiguration = AssetDatabase.LoadAssetAtPath<ApplicationConfiguration>(relativeApplicationConfigurationPath);
-
+            m_ApplicationConfiguration = AssetDatabase.LoadAssetAtPath<ApplicationConfiguration>(relativeApplicationConfigurationPath);
+            
             // Setup project settings and other setup
             GuiLine();
             EditorGUILayout.Space(16);
             GUIStyle setupButtonStyle = new GUIStyle(GUI.skin.button);
             setupButtonStyle.richText = true;
-            GUI.enabled = !applicationConfiguration;
+            GUI.enabled = !m_ApplicationConfiguration;
             if (GUILayout.Button("<b>Magic setup button (<i>pssst... artist, click me!</i>)</b>", setupButtonStyle, GUILayout.Height(100)))
             {
                 // Create application configuration
                 // TODO: Get scenes in some from some sort of constant MUCOSDK config file.
-                applicationConfiguration = ScriptableObject.CreateInstance<ApplicationConfiguration>();
-                applicationConfiguration.EntryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity"); // TODO: Better solution for path
-                applicationConfiguration.MenuScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Menu.unity"); // TODO: Better solution for path
-                AssetDatabase.CreateAsset(applicationConfiguration, relativeApplicationConfigurationPath);
+                m_ApplicationConfiguration = ScriptableObject.CreateInstance<ApplicationConfiguration>();
+                m_ApplicationConfiguration.EntryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Entry.unity"); // TODO: Better solution for path
+                m_ApplicationConfiguration.MenuScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/ExperienceFrameworkRnD/S_Menu.unity"); // TODO: Better solution for path
+                AssetDatabase.CreateAsset(m_ApplicationConfiguration, relativeApplicationConfigurationPath);
 
                 // Add scenes to build settings
-                MUCOEditorUtilities.AddSceneToBuild(applicationConfiguration.EntryScene);
-                MUCOEditorUtilities.AddSceneToBuild(applicationConfiguration.MenuScene);
+                MUCOEditorUtilities.AddSceneToBuild(m_ApplicationConfiguration.EntryScene);
+                MUCOEditorUtilities.AddSceneToBuild(m_ApplicationConfiguration.MenuScene);
 
-                m_ApplicationConfiguration = applicationConfiguration;
+                m_ApplicationConfiguration = m_ApplicationConfiguration;
             }
             EditorGUILayout.Space(8);
             GUI.enabled = false;
@@ -138,7 +138,7 @@ namespace PhenomenalViborg.MUCOSDK
                     // Append experience to application configuration
                     if (m_ApplicationConfiguration)
                     {
-                        m_ApplicationConfiguration.ExperienceConfigurations = m_ApplicationConfiguration.ExperienceConfigurations.Append(experienceConfiguration).ToArray();
+                        m_ApplicationConfiguration.ExperienceConfigurations.Append(experienceConfiguration);
                     }
                     else
                     {

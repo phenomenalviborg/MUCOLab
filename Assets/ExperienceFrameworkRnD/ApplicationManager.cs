@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Antilatency;
 
 namespace PhenomenalViborg.MUCOSDK
 {
@@ -22,7 +22,19 @@ namespace PhenomenalViborg.MUCOSDK
             
             string serverAddress = TrackingManager.GetInstance().GetStringPropertyFromAdminNode("ServerAddress");
             int serverPort = int.Parse(TrackingManager.GetInstance().GetStringPropertyFromAdminNode("ServerPort"));
-            NetworkManager.GetInstance().Connect(serverAddress, serverPort);
+            ClientNetworkManager.GetInstance().Connect(serverAddress, serverPort);
+        }
+
+        public void LoadExperienceByName(string experienceName)
+        {
+            ExperienceConfiguration experienceConfiguration = m_ApplicationConfiguration.ExperienceConfigurations.Find(ec => ec.Name == experienceName);
+            if (!experienceConfiguration)
+            {
+                Debug.LogError($"Failed to find experience configuration with name '{experienceName}' in the specified application configuration.");
+            }
+
+            Debug.Log($"Loading experience '{experienceConfiguration.Scene.name}'.");
+            SceneManager.LoadScene(experienceConfiguration.Scene.name);
         }
     }
 }
