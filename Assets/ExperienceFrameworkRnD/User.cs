@@ -4,9 +4,20 @@ using UnityEngine;
 
 public class User : MonoBehaviour
 {
-    private void Awake()
-    {
+    public int UserIdentifier /*{ get; private set; }*/ = -1;
+    public bool IsLocalUser = false;
 
+    public void Initialize(int userIdentifier, bool isLocalUser)
+    {
+        UserIdentifier = userIdentifier;
+        IsLocalUser = isLocalUser;
+
+        InvokeRepeating("SendDeviceInfo", 0.0f, 1.0f);
+
+        if (isLocalUser)
+        {
+            gameObject.AddComponent<Camera>();
+        }
     }
 
 }
