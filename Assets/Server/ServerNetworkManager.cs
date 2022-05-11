@@ -179,6 +179,20 @@ namespace PhenomenalViborg.MUCOSDK
         }
         #endregion
 
+        #region Packet senders
+        
+        public void SendLoadExperience(string experienceName)
+        {
+            Debug.Log($"SendLoadExperience({experienceName}");
+
+            using (MUCOPacket packet = new MUCOPacket((int)MUCOServerPackets.LoadExperience))
+            {
+                packet.WriteString(experienceName);
+                Server.SendPacketToAll(packet, true);
+            }
+        }
+        #endregion
+
         private static void Log(MUCOLogMessage message)
         {
             Debug.Log(message.ToString());

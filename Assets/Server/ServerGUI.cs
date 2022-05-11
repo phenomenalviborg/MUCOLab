@@ -6,6 +6,7 @@ namespace PhenomenalViborg.MUCOSDK
     public class ServerGUI : MonoBehaviour
     {
         private string m_PortString = "4960";
+        private string m_LoadExperienceString = "ExperienceName";
 
         private void OnGUI()
         {
@@ -32,13 +33,20 @@ namespace PhenomenalViborg.MUCOSDK
             m_PortString = GUILayout.TextField(m_PortString, 8);
             GUILayout.EndHorizontal();
 
-
-
+            
             GUI.enabled = ServerNetworkManager.GetInstance().IsStarted();
             if (GUILayout.Button("Stop Server"))
             {
                 ServerNetworkManager.GetInstance().StopServer();
             }
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Load Experience"))
+            {
+                ServerNetworkManager.GetInstance().SendLoadExperience(m_LoadExperienceString);
+            }
+            m_LoadExperienceString = GUILayout.TextField(m_LoadExperienceString, 64);
+            GUILayout.EndHorizontal();
         }
 
         private void RenderInfoWindow(int windowID)
