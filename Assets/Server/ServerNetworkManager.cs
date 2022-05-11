@@ -73,6 +73,7 @@ namespace PhenomenalViborg.MUCOSDK
                 // Create a user object on the server.
                 Debug.Log($"User Connected: {newClientInfo}");
                 m_UserObjects[newClientInfo.UniqueIdentifier] = Instantiate(m_RemoteUserPrefab);
+                DontDestroyOnLoad(m_UserObjects[newClientInfo.UniqueIdentifier]);
                 User user = m_UserObjects[newClientInfo.UniqueIdentifier].GetComponent<User>();
                 user.Initialize(newClientInfo.UniqueIdentifier, false);
 
