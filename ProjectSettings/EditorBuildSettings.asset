@@ -5,33 +5,18 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/ExperienceFrameworkRnD/S_Entry.unity
+    path: Packages/com.phenomenalviborg.mucosdk/Runtime/Framework/Shared/S_Entry.unity
     guid: 56e02c62280735f498837d0300d094b1
   - enabled: 1
-    path: Assets/ExperienceFrameworkRnD/S_Menu.unity
+    path: Packages/com.phenomenalviborg.mucosdk/Runtime/Framework/Shared/S_Menu.unity
     guid: a86ed2feecd8a41498e8dff9b45195b5
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 1
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 1
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 1
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 1
-    path: 
-    guid: d8183cd83dd9660458babfbbf121f005
   - enabled: 1
     path: Assets/NewExperience/S_NewExperience.unity
-    guid: be19ea1e88e9ef349a5c6db6211b9044
+    guid: b4cf55cae42d16547b78783c585edbcf
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: c7c4f37ee8b310546aae1854f0388a82, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 31c436d12bcb93c4db1b9dc37164acce, type: 2}
