@@ -37,6 +37,7 @@ namespace PhenomenalViborg.MUCOSDK
             Server.RegisterPacketHandler((int)MUCOClientPackets.TranslateUser, HandleTranslateUser);
             Server.RegisterPacketHandler((int)MUCOClientPackets.RotateUser, HandleRotateUser);
             Server.RegisterPacketHandler((int)MUCOClientPackets.DeviceInfo, HandleDeviceInfo);
+            Server.RegisterPacketHandler((int)MUCOClientPackets.ReplicatedMulticast, HandleReplicatedMulticast);
             Server.OnClientConnectedEvent += OnClientConnected;
             Server.OnClientDisconnectedEvent += OnClientDisconnected;
         }
@@ -178,10 +179,22 @@ namespace PhenomenalViborg.MUCOSDK
 
             ClientDeviceInfo[fromClient] = deviceInfo;
         }
+
+        private void HandleReplicatedMulticast(MUCOPacket packet, int fromClient)
+        {
+            MUCOThreadManager.ExecuteOnMainThread(() =>
+            {
+                Debug.Log(packet.GetReadOffset());
+                using (MUCOPacket multicastPacket = new MUCOPacket(packet.ReadBytes(packet.UnreadLength())))
+                {
+                    Server.SendPacketToAll(multicastPacket);
+                }
+            });
+        }
         #endregion
 
         #region Packet senders
-        
+
         public void SendLoadExperience(string experienceName)
         {
             Debug.Log($"SendLoadExperience({experienceName}");

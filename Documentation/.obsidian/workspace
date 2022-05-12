@@ -7,8 +7,11 @@
         "id": "0eb38b4a301f17c5",
         "type": "leaf",
         "state": {
-          "type": "empty",
-          "state": {}
+          "type": "markdown",
+          "state": {
+            "file": "Networking.md",
+            "mode": "source"
+          }
         }
       }
     ],
@@ -65,6 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Networking.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -84,6 +88,7 @@
   },
   "active": "0eb38b4a301f17c5",
   "lastOpenFiles": [
+    "Networking.md",
     "Solution Proposals/Establishing the initial connection between client and server.md"
   ]
 }
