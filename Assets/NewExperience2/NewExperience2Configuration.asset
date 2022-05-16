@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6415f285a2caf5142b3da5daa9a14913, type: 3}
-  m_Name: NewExperienceConfiguration
+  m_Name: NewExperience2Configuration
   m_EditorClassIdentifier: 
-  Name: NewExperience
+  Name: NewExperience2
   Description: 
-  Scene: {fileID: 102900000, guid: 9399d8af99c11ff4eaf4c761d0024197, type: 3}
+  Scene: {fileID: 102900000, guid: b6f7f9af29525034dba4134ba50a4055, type: 3}
   LocalUserPrefab: {fileID: 8466323033043974117, guid: 09d460d44b7978740aae0b104a193922, type: 3}
   RemoteUserPrefab: {fileID: 8466323033043974117, guid: fc832a1110af38e4d86b490cd8561e8c, type: 3}
