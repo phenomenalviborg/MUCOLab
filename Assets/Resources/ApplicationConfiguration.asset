@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53c279c09679ac54c9754ce38eda8d6a, type: 3}
   m_Name: ApplicationConfiguration
   m_EditorClassIdentifier: 
-  EntryScene: {fileID: 102900000, guid: 56e02c62280735f498837d0300d094b1, type: 3}
-  MenuScene: {fileID: 102900000, guid: a86ed2feecd8a41498e8dff9b45195b5, type: 3}
+  EntryScene:
+    sceneGuid: 56e02c62280735f498837d0300d094b1
+  MenuScene:
+    sceneGuid: a86ed2feecd8a41498e8dff9b45195b5
   ExperienceConfigurations:
+  - {fileID: 11400000, guid: 1493df51ea6d0f14898269b0d5c0decb, type: 2}
   - {fileID: 11400000, guid: 9ec1c12c526b65d47b8fbb0f7dce1244, type: 2}
+  ManualInitialization: 0
