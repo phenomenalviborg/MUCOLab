@@ -1,9 +1,3 @@
 [submodule "Packages/com.phenomenalviborg.mucosdk"]
 	path = Packages/com.phenomenalviborg.mucosdk
 	url = https://github.com/phenomenalviborg/com.phenomenalviborg.mucosdk
-[submodule "Packages/com.phenomenalviborg.muconet"]
-	path = Packages/com.phenomenalviborg.muconet
-	url = https://github.com/phenomenalviborg/com.phenomenalviborg.muconet
-[submodule "Packages/com.phenomenalviborg.antilatencysdk"]
-	path = Packages/com.phenomenalviborg.antilatencysdk
-	url = https://github.com/phenomenalviborg/com.phenomenalviborg.antilatencysdk

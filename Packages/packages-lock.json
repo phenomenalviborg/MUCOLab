@@ -1,25 +1,10 @@
 {
   "dependencies": {
-    "com.phenomenalviborg.antilatencysdk": {
-      "version": "file:com.phenomenalviborg.antilatencysdk",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "com.phenomenalviborg.muconet": {
-      "version": "file:com.phenomenalviborg.muconet",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "com.phenomenalviborg.mucosdk": {
       "version": "file:com.phenomenalviborg.mucosdk",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {
-        "com.phenomenalviborg.muconet": "1.0.0",
-        "com.phenomenalviborg.antilatencysdk": "1.0.0"
-      }
+      "dependencies": {}
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
