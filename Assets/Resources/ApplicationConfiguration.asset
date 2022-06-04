@@ -17,7 +17,6 @@ MonoBehaviour:
   MenuScene:
     sceneGuid: a86ed2feecd8a41498e8dff9b45195b5
   ExperienceConfigurations:
-  - {fileID: 11400000, guid: 1493df51ea6d0f14898269b0d5c0decb, type: 2}
   - {fileID: 11400000, guid: 9ec1c12c526b65d47b8fbb0f7dce1244, type: 2}
   ManualInitialization: 0
-  OfflineMode: 1
+  OfflineMode: 0

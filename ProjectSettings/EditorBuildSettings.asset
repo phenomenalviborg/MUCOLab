@@ -12,11 +12,8 @@ EditorBuildSettings:
     path: Packages/com.phenomenalviborg.mucosdk/Runtime/Framework/Shared/S_Menu.unity
     guid: a86ed2feecd8a41498e8dff9b45195b5
   - enabled: 1
-    path: Assets/NewExperience/S_NewExperience.unity
-    guid: 9399d8af99c11ff4eaf4c761d0024197
-  - enabled: 1
-    path: Assets/NewExperience2/S_NewExperience2.unity
-    guid: b6f7f9af29525034dba4134ba50a4055
+    path: Assets/GalleryExperience/S_GalleryExperience.unity
+    guid: e322c09691008e547be839ed8bd3d9d2
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: c7c4f37ee8b310546aae1854f0388a82, type: 2}
     com.unity.xr.magicleap.magic_leap_settings: {fileID: 11400000, guid: 8b093e5897d72a74983c70a0d80b383c, type: 2}
