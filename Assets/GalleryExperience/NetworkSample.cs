@@ -9,8 +9,8 @@ public class NetworkSample : MonoBehaviour
 {
     public enum EMyPacketIdentifier : System.UInt32
     {
-        MulticastSample = 50000,
-        UnicastSample = 50001
+        MulticastSample,
+        UnicastSample
     }
 
     private bool m_StaticallyInitialized = false;
@@ -19,8 +19,8 @@ public class NetworkSample : MonoBehaviour
     {
         if (!m_StaticallyInitialized)
         {
-            ClientNetworkManager.GetInstance().Client.RegisterPacketHandler((int)EMyPacketIdentifier.MulticastSample, HandleMulticastSample);
-            ClientNetworkManager.GetInstance().Client.RegisterPacketHandler((int)EMyPacketIdentifier.UnicastSample, HandleUnicastSample);
+            ClientNetworkManager.GetInstance().Client.RegisterPacketHandler((System.UInt16)EMyPacketIdentifier.MulticastSample, HandleMulticastSample);
+            ClientNetworkManager.GetInstance().Client.RegisterPacketHandler((System.UInt16)EMyPacketIdentifier.UnicastSample, HandleUnicastSample);
             m_StaticallyInitialized = true;
         }
     }
@@ -29,7 +29,7 @@ public class NetworkSample : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            using (MUCOPacket packet = new MUCOPacket((int)EMyPacketIdentifier.MulticastSample))
+            using (MUCOPacket packet = new MUCOPacket((System.UInt16)EMyPacketIdentifier.MulticastSample))
             {
                 packet.WriteString("Multicast payload");
                 ClientNetworkManager.GetInstance().SendReplicatedMulticastPacket(packet);
@@ -39,7 +39,7 @@ public class NetworkSample : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             NetworkUser receiver = ClientNetworkManager.GetInstance().GetNetworkUsers()[0];
-            using (MUCOPacket packet = new MUCOPacket((int)EMyPacketIdentifier.UnicastSample))
+            using (MUCOPacket packet = new MUCOPacket((System.UInt16)EMyPacketIdentifier.UnicastSample))
             {
                 packet.WriteString("Unicast payload");
                 ClientNetworkManager.GetInstance().SendReplicatedUnicastPacket(packet, receiver);
