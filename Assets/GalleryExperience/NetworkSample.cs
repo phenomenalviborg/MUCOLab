@@ -51,8 +51,8 @@ public class NetworkSample : MonoBehaviour
     {
         if (!m_StaticallyInitialized)
         {
-            ClientNetworkManager.GetInstance().Client.RegisterPacketHandler((System.UInt16)EMyPacketIdentifier.MulticastSample, HandleMulticastSample);
-            ClientNetworkManager.GetInstance().Client.RegisterPacketHandler((System.UInt16)EMyPacketIdentifier.UnicastSample, HandleUnicastSample);
+            ClientNetworkManager.GetInstance().RegisterPacketHandler((System.UInt16)EMyPacketIdentifier.MulticastSample, HandleMulticastSample);
+            ClientNetworkManager.GetInstance().RegisterPacketHandler((System.UInt16)EMyPacketIdentifier.UnicastSample, HandleUnicastSample);
             m_StaticallyInitialized = true;
         }
 
@@ -71,6 +71,7 @@ public class NetworkSample : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
+            Debug.Log("yeah...");
             using (MUCOPacket packet = new MUCOPacket((System.UInt16)EMyPacketIdentifier.MulticastSample))
             {
                 packet.WriteString("Multicast payload");
@@ -80,6 +81,7 @@ public class NetworkSample : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
+            Debug.Log("yeah...");
             NetworkUser receiver = ClientNetworkManager.GetInstance().GetLocalNetworkUser();
             using (MUCOPacket packet = new MUCOPacket((System.UInt16)EMyPacketIdentifier.UnicastSample))
             {

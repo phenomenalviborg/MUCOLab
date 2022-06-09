@@ -16,5 +16,5 @@ MonoBehaviour:
   Description: 
   Scene:
     sceneGuid: e322c09691008e547be839ed8bd3d9d2
-  LocalUserPrefab: {fileID: 8466323033043974117, guid: 09d460d44b7978740aae0b104a193922, type: 3}
+  LocalUserPrefab: {fileID: 8466323033043974117, guid: 9c1fbfba4ba56644790a49735ccf69c9, type: 3}
   RemoteUserPrefab: {fileID: 8466323033043974117, guid: fc832a1110af38e4d86b490cd8561e8c, type: 3}
