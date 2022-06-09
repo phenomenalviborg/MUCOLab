@@ -18,5 +18,10 @@ MonoBehaviour:
     sceneGuid: a86ed2feecd8a41498e8dff9b45195b5
   ExperienceConfigurations:
   - {fileID: 11400000, guid: 9ec1c12c526b65d47b8fbb0f7dce1244, type: 2}
+  AdminNodeTag: Admin
+  UserNodeTag: User
   ManualInitialization: 0
   OfflineMode: 0
+  UseStaticServerInfo: 1
+  ServerAddress: 127.0.0.1
+  ServerPort: 4960

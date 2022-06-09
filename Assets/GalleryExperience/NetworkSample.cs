@@ -80,7 +80,7 @@ public class NetworkSample : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            NetworkUser receiver = ClientNetworkManager.GetInstance().GetNetworkUsers()[0];
+            NetworkUser receiver = ClientNetworkManager.GetInstance().GetLocalNetworkUser();
             using (MUCOPacket packet = new MUCOPacket((System.UInt16)EMyPacketIdentifier.UnicastSample))
             {
                 packet.WriteString("Unicast payload");
