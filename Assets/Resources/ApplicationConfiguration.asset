@@ -23,5 +23,5 @@ MonoBehaviour:
   ManualInitialization: 0
   OfflineMode: 0
   UseStaticServerInfo: 1
-  ServerAddress: 127.0.0.1
+  ServerAddress: 192.168.1.10
   ServerPort: 4960

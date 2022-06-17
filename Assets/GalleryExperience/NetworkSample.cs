@@ -20,33 +20,6 @@ public class NetworkSample : MonoBehaviour
 
 
 
-
-
-    // API sample: Replicated variable.
-    private ReplicatedVariable<float> m_MyReplicatedFloat = 132.123f; // Is Replicated<float> better?
-
-    // API sample: Replicated event.
-    private ReplicatedEvent m_MyReplicatedEvent;
-
-    // API sample: Replicated event with custom arguments.
-    public class MyCustomEventArgs : System.EventArgs
-    {
-        public MyCustomEventArgs(float a, int b)
-        {
-            this.A = a;
-            this.B = b;
-        }
-
-        public float A;
-        public int B;
-    }
-
-    private ReplicatedEvent<MyCustomEventArgs> m_MyOtherReplicatedEvent;
-
-
-
-
-
     private void Awake()
     {
         if (!m_StaticallyInitialized)
@@ -55,16 +28,6 @@ public class NetworkSample : MonoBehaviour
             ClientNetworkManager.GetInstance().RegisterPacketHandler((System.UInt16)EMyPacketIdentifier.UnicastSample, HandleUnicastSample);
             m_StaticallyInitialized = true;
         }
-
-        // Replicated variable demo
-        m_MyReplicatedFloat = 123.45f;
-        m_MyReplicatedFloat += 0.5f;
-        if (m_MyReplicatedFloat > 2.0f)
-        {
-            Debug.Log("m_MyReplicatedFloat is greater than 2.0f!");
-        }
-
-        Debug.Log(m_MyReplicatedFloat);
     }
 
     private void Update()
