@@ -8,7 +8,7 @@
         <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
       </intent-filter>
       <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
-      <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/usb_filter" />
+      <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/antilatency_usb_filter" />
     </activity>
   </application>
 </manifest>
