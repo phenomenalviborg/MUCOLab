@@ -35,6 +35,7 @@ Shader "MUCO/S_Guardian"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                float3 worldpos : TEXCOORD1;
             };
 
             fragmentInput vert(vertexInput v)
@@ -42,6 +43,7 @@ Shader "MUCO/S_Guardian"
                 fragmentInput o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
+                o.worldpos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 return o;
             }
 
@@ -85,6 +87,9 @@ Shader "MUCO/S_Guardian"
                 float2 st = movingTiles(uv, u_Zoom);
                 fixed4 col = fixed4(1.0f, 1.0f, 1.0f, circle(st, u_Radius));
                 clip(col.a - 0.7);
+                float dist  = distance(_WorldSpaceCameraPos, i.worldpos);
+                dist *= 0.5;
+                col.a *= 1 - clamp(dist, 0.0f, 1.0f);
                 return col;
             }
             ENDCG
